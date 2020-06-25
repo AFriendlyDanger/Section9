@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Objects/Tiles/Tile.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/groundTiles.png" type="Texture" id=2]
+
+[node name="FloorTile" type="Sprite"]
+z_index = -1
+texture = ExtResource( 2 )
+centered = false
+vframes = 4
+hframes = 4
+script = ExtResource( 1 )
+wall = false

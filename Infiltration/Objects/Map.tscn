@@ -1,0 +1,2192 @@
+[gd_scene load_steps=30 format=2]
+
+[ext_resource path="res://Objects/Tiles/WallTile.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Objects/Tiles/FloorTile.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Objects/Tiles/DoorTile.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Objects/Tiles/ConsoleTile.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Objects/Map.gd" type="Script" id=5]
+[ext_resource path="res://Objects/Player.gd" type="Script" id=6]
+[ext_resource path="res://Objects/Pieces/DemoMan.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Objects/Pieces/Hacker.tscn" type="PackedScene" id=8]
+[ext_resource path="res://Sprites/scan.png" type="Texture" id=10]
+[ext_resource path="res://Objects/Camera.gd" type="Script" id=11]
+
+[sub_resource type="VisualShaderNodeVec3Uniform" id=8]
+uniform_name = "VectorUniform"
+
+[sub_resource type="VisualShaderNodeTextureUniform" id=9]
+uniform_name = "TextureUniform"
+texture_type = 1
+
+[sub_resource type="VisualShaderNodeInput" id=10]
+input_name = "uv"
+
+[sub_resource type="VisualShaderNodeInput" id=2]
+input_name = "time"
+
+[sub_resource type="VisualShaderNodeVectorOp" id=3]
+operator = 2
+
+[sub_resource type="VisualShaderNodeVec3Constant" id=5]
+constant = Vector3( 0.2, 0.3, 0 )
+
+[sub_resource type="VisualShaderNodeVectorOp" id=6]
+
+[sub_resource type="VisualShader" id=11]
+resource_local_to_scene = true
+code = "shader_type canvas_item;
+uniform vec3 VectorUniform;
+uniform sampler2D TextureUniform : hint_albedo;
+
+
+
+void vertex() {
+// Output:0
+
+}
+
+void fragment() {
+// VectorUniform:10
+	vec3 n_out10p0 = VectorUniform;
+
+// Input:5
+	float n_out5p0 = TIME;
+
+// VectorOp:6
+	vec3 n_out6p0 = n_out10p0 * vec3(n_out5p0);
+
+// Input:2
+	vec3 n_out2p0 = vec3(UV, 0.0);
+
+// VectorOp:9
+	vec3 n_out9p0 = n_out6p0 + n_out2p0;
+
+// TextureUniform:11
+	vec3 n_out11p0;
+	float n_out11p1;
+	{
+		vec4 n_tex_read = texture(TextureUniform, n_out9p0.xy);
+		n_out11p0 = n_tex_read.rgb;
+		n_out11p1 = n_tex_read.a;
+	}
+
+// Output:0
+	COLOR.rgb = n_out11p0;
+	COLOR.a = n_out11p1;
+
+}
+
+void light() {
+// Output:0
+
+}
+"
+graph_offset = Vector2( -318.744, 202 )
+mode = 1
+flags/light_only = false
+nodes/fragment/0/position = Vector2( 800, 240 )
+nodes/fragment/2/node = SubResource( 10 )
+nodes/fragment/2/position = Vector2( -20, 440 )
+nodes/fragment/5/node = SubResource( 2 )
+nodes/fragment/5/position = Vector2( -80, 320 )
+nodes/fragment/6/node = SubResource( 3 )
+nodes/fragment/6/position = Vector2( 140, 260 )
+nodes/fragment/8/node = SubResource( 5 )
+nodes/fragment/8/position = Vector2( -260, 220 )
+nodes/fragment/9/node = SubResource( 6 )
+nodes/fragment/9/position = Vector2( 220, 400 )
+nodes/fragment/10/node = SubResource( 8 )
+nodes/fragment/10/position = Vector2( -160, 120 )
+nodes/fragment/11/node = SubResource( 9 )
+nodes/fragment/11/position = Vector2( 500, 280 )
+nodes/fragment/connections = PoolIntArray( 5, 0, 6, 1, 2, 0, 9, 1, 6, 0, 9, 0, 10, 0, 6, 0, 9, 0, 11, 0, 11, 0, 0, 0, 11, 1, 0, 1 )
+
+[sub_resource type="ShaderMaterial" id=12]
+resource_local_to_scene = true
+shader = SubResource( 11 )
+shader_param/VectorUniform = Vector3( 0.2, 0.3, 0 )
+shader_param/TextureUniform = ExtResource( 10 )
+
+[sub_resource type="RectangleShape2D" id=13]
+resource_local_to_scene = true
+extents = Vector2( 24, 24 )
+
+[sub_resource type="RectangleShape2D" id=24]
+resource_local_to_scene = true
+extents = Vector2( 24, 24 )
+
+[sub_resource type="RectangleShape2D" id=15]
+resource_local_to_scene = true
+extents = Vector2( 32, 24 )
+
+[sub_resource type="RectangleShape2D" id=16]
+resource_local_to_scene = true
+extents = Vector2( 32, 16 )
+
+[sub_resource type="RectangleShape2D" id=17]
+resource_local_to_scene = true
+extents = Vector2( 40, 8 )
+
+[sub_resource type="RectangleShape2D" id=18]
+resource_local_to_scene = true
+extents = Vector2( 56, 8 )
+
+[sub_resource type="RectangleShape2D" id=19]
+resource_local_to_scene = true
+extents = Vector2( 24, 16 )
+
+[sub_resource type="RectangleShape2D" id=20]
+resource_local_to_scene = true
+extents = Vector2( 16, 40 )
+
+[sub_resource type="RectangleShape2D" id=21]
+resource_local_to_scene = true
+extents = Vector2( 8, 40 )
+
+[sub_resource type="RectangleShape2D" id=23]
+resource_local_to_scene = true
+extents = Vector2( 24, 24 )
+
+[node name="Map" type="Node2D"]
+script = ExtResource( 5 )
+
+[node name="Tiles" type="Node2D" parent="."]
+
+[node name="FloorTile" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 16, 16 )
+frame = 5
+
+[node name="FloorTile2" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 32, 16 )
+frame = 2
+
+[node name="FloorTile3" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 32, 32 )
+
+[node name="FloorTile4" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 16, 32 )
+frame = 4
+
+[node name="FloorTile5" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 16, 48 )
+frame = 4
+
+[node name="FloorTile6" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 32, 48 )
+
+[node name="FloorTile7" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 32, 64 )
+frame = 4
+
+[node name="FloorTile8" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 64, 16 )
+frame = 5
+
+[node name="FloorTile9" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 80, 16 )
+frame = 2
+
+[node name="FloorTile10" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 96, 16 )
+frame = 2
+
+[node name="FloorTile11" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 96, 32 )
+
+[node name="FloorTile15" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 128, 64 )
+frame = 2
+
+[node name="FloorTile16" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 112, 64 )
+frame = 2
+
+[node name="FloorTile17" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 96, 64 )
+frame = 2
+
+[node name="FloorTile18" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 80, 64 )
+frame = 1
+
+[node name="FloorTile20" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 64, 64 )
+frame = 4
+
+[node name="FloorTile21" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 64, 80 )
+frame = 4
+
+[node name="FloorTile22" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 64, 96 )
+frame = 6
+
+[node name="FloorTile23" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 48, 96 )
+frame = 2
+
+[node name="FloorTile24" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 32, 96 )
+frame = 2
+
+[node name="FloorTile25" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 16, 96 )
+frame = 5
+
+[node name="FloorTile26" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 16, 112 )
+frame = 4
+
+[node name="FloorTile27" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 32, 112 )
+
+[node name="FloorTile28" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 48, 112 )
+
+[node name="FloorTile29" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 64, 112 )
+
+[node name="FloorTile30" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 64, 128 )
+frame = 4
+
+[node name="FloorTile31" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 64, 144 )
+frame = 4
+
+[node name="FloorTile32" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 64, 160 )
+frame = 4
+
+[node name="FloorTile33" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 64, 176 )
+frame = 6
+
+[node name="FloorTile34" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 48, 176 )
+frame = 5
+
+[node name="FloorTile35" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 32, 144 )
+frame = 5
+
+[node name="FloorTile36" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 32, 160 )
+frame = 6
+
+[node name="FloorTile37" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 16, 160 )
+frame = 5
+
+[node name="FloorTile38" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 16, 192 )
+frame = 5
+
+[node name="FloorTile41" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 32, 192 )
+frame = 2
+
+[node name="FloorTile42" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 48, 192 )
+frame = 6
+
+[node name="FloorTile43" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 48, 208 )
+frame = 4
+
+[node name="FloorTile44" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 64, 208 )
+frame = 1
+
+[node name="FloorTile45" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 96, 208 )
+frame = 5
+
+[node name="FloorTile46" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 112, 208 )
+frame = 2
+
+[node name="FloorTile47" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 112, 176 )
+frame = 2
+
+[node name="FloorTile48" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 96, 176 )
+frame = 5
+
+[node name="FloorTile49" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 144, 176 )
+frame = 5
+
+[node name="FloorTile50" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 144, 192 )
+frame = 4
+
+[node name="FloorTile51" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 144, 208 )
+frame = 4
+
+[node name="FloorTile52" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 160, 192 )
+frame = 1
+
+[node name="FloorTile53" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 176, 192 )
+frame = 2
+
+[node name="FloorTile54" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 192, 208 )
+frame = 4
+
+[node name="FloorTile55" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 192, 192 )
+frame = 6
+
+[node name="FloorTile56" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 192, 176 )
+frame = 5
+
+[node name="FloorTile57" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 208, 176 )
+frame = 2
+
+[node name="FloorTile58" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 224, 176 )
+frame = 2
+
+[node name="FloorTile59" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 240, 176 )
+frame = 2
+
+[node name="FloorTile60" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 240, 192 )
+
+[node name="FloorTile61" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 224, 192 )
+
+[node name="FloorTile62" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 208, 192 )
+
+[node name="FloorTile63" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 224, 208 )
+frame = 4
+
+[node name="FloorTile64" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 240, 208 )
+
+[node name="FloorTile65" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 256, 144 )
+frame = 4
+
+[node name="FloorTile114" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 272, 144 )
+
+[node name="FloorTile115" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 272, 128 )
+
+[node name="FloorTile116" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 272, 112 )
+frame = 1
+
+[node name="FloorTile117" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 288, 112 )
+frame = 2
+
+[node name="FloorTile118" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 304, 112 )
+frame = 2
+
+[node name="FloorTile119" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 320, 112 )
+frame = 2
+
+[node name="FloorTile120" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 288, 128 )
+
+[node name="FloorTile121" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 288, 144 )
+
+[node name="FloorTile122" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 288, 208 )
+frame = 1
+
+[node name="FloorTile123" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 304, 208 )
+frame = 2
+
+[node name="FloorTile124" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 320, 208 )
+frame = 2
+
+[node name="FloorTile125" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 336, 208 )
+frame = 2
+
+[node name="FloorTile126" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 352, 208 )
+frame = 2
+
+[node name="FloorTile127" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 368, 208 )
+frame = 2
+
+[node name="FloorTile128" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 384, 208 )
+frame = 2
+
+[node name="FloorTile129" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 400, 208 )
+frame = 6
+
+[node name="FloorTile130" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 400, 192 )
+frame = 4
+
+[node name="FloorTile131" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 400, 176 )
+frame = 4
+
+[node name="FloorTile132" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 400, 160 )
+frame = 4
+
+[node name="FloorTile133" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 400, 144 )
+frame = 5
+
+[node name="FloorTile134" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 416, 144 )
+frame = 2
+
+[node name="FloorTile135" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 432, 144 )
+frame = 2
+
+[node name="FloorTile136" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 448, 144 )
+frame = 2
+
+[node name="FloorTile137" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 464, 144 )
+frame = 2
+
+[node name="FloorTile138" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 432, 176 )
+frame = 5
+
+[node name="FloorTile139" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 448, 176 )
+frame = 2
+
+[node name="FloorTile140" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 464, 176 )
+frame = 2
+
+[node name="FloorTile141" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 480, 176 )
+frame = 2
+
+[node name="FloorTile142" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 480, 192 )
+frame = 4
+
+[node name="FloorTile143" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 480, 208 )
+frame = 6
+
+[node name="FloorTile144" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 464, 208 )
+frame = 2
+
+[node name="FloorTile145" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 448, 208 )
+frame = 1
+
+[node name="FloorTile146" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 432, 208 )
+frame = 4
+
+[node name="FloorTile147" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 432, 192 )
+frame = 4
+
+[node name="FloorTile148" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 368, 176 )
+frame = 6
+
+[node name="FloorTile149" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 352, 176 )
+frame = 2
+
+[node name="FloorTile150" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 336, 176 )
+frame = 1
+
+[node name="FloorTile151" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 320, 176 )
+frame = 4
+
+[node name="FloorTile152" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 320, 160 )
+frame = 4
+
+[node name="FloorTile153" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 320, 144 )
+frame = 5
+
+[node name="FloorTile154" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 336, 144 )
+frame = 2
+
+[node name="FloorTile155" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 352, 144 )
+frame = 2
+
+[node name="FloorTile156" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 368, 144 )
+frame = 2
+
+[node name="FloorTile157" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 368, 160 )
+frame = 4
+
+[node name="FloorTile158" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 368, 112 )
+frame = 4
+
+[node name="FloorTile159" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 384, 112 )
+frame = 1
+
+[node name="FloorTile160" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 400, 112 )
+frame = 2
+
+[node name="FloorTile161" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 416, 112 )
+frame = 2
+
+[node name="FloorTile162" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 432, 112 )
+frame = 2
+
+[node name="FloorTile163" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 432, 80 )
+frame = 2
+
+[node name="FloorTile164" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 416, 80 )
+frame = 1
+
+[node name="FloorTile165" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 400, 80 )
+frame = 4
+
+[node name="FloorTile166" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 400, 64 )
+frame = 4
+
+[node name="FloorTile167" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 400, 48 )
+frame = 5
+
+[node name="FloorTile168" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 416, 48 )
+frame = 2
+
+[node name="FloorTile169" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 432, 48 )
+frame = 2
+
+[node name="FloorTile170" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 400, 16 )
+frame = 5
+
+[node name="FloorTile171" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 416, 16 )
+frame = 2
+
+[node name="FloorTile172" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 432, 16 )
+frame = 2
+
+[node name="FloorTile173" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 448, 16 )
+frame = 2
+
+[node name="FloorTile174" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 464, 16 )
+frame = 2
+
+[node name="FloorTile175" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 464, 32 )
+frame = 4
+
+[node name="FloorTile176" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 480, 32 )
+frame = 1
+
+[node name="FloorTile177" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 464, 48 )
+frame = 4
+
+[node name="FloorTile178" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 480, 48 )
+
+[node name="FloorTile179" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 464, 64 )
+frame = 4
+
+[node name="FloorTile180" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 480, 64 )
+
+[node name="FloorTile181" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 464, 80 )
+frame = 4
+
+[node name="FloorTile182" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 480, 80 )
+
+[node name="FloorTile183" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 464, 96 )
+frame = 4
+
+[node name="FloorTile184" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 480, 96 )
+
+[node name="FloorTile185" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 480, 112 )
+
+[node name="FloorTile186" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 464, 112 )
+frame = 6
+
+[node name="FloorTile187" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 448, 112 )
+frame = 2
+
+[node name="FloorTile188" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 368, 96 )
+frame = 4
+
+[node name="FloorTile189" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 368, 80 )
+frame = 2
+
+[node name="FloorTile190" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 352, 80 )
+frame = 2
+
+[node name="FloorTile191" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 336, 80 )
+frame = 2
+
+[node name="FloorTile192" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 320, 80 )
+frame = 2
+
+[node name="FloorTile193" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 304, 80 )
+frame = 1
+
+[node name="FloorTile194" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 288, 80 )
+frame = 4
+
+[node name="FloorTile195" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 288, 64 )
+frame = 4
+
+[node name="FloorTile196" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 288, 48 )
+frame = 4
+
+[node name="FloorTile197" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 288, 32 )
+frame = 6
+
+[node name="FloorTile198" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 288, 16 )
+frame = 5
+
+[node name="FloorTile199" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 320, 16 )
+frame = 5
+
+[node name="FloorTile200" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 336, 16 )
+frame = 2
+
+[node name="FloorTile201" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 352, 16 )
+frame = 2
+
+[node name="FloorTile202" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 368, 16 )
+frame = 2
+
+[node name="FloorTile203" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 368, 32 )
+
+[node name="FloorTile204" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 368, 48 )
+
+[node name="FloorTile205" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 352, 48 )
+frame = 6
+
+[node name="FloorTile206" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 352, 32 )
+frame = 4
+
+[node name="FloorTile207" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 336, 48 )
+frame = 1
+
+[node name="FloorTile208" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 320, 48 )
+frame = 4
+
+[node name="FloorTile209" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 320, 32 )
+frame = 4
+
+[node name="FloorTile66" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 256, 128 )
+frame = 4
+
+[node name="FloorTile67" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 256, 112 )
+frame = 4
+
+[node name="FloorTile68" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 256, 96 )
+frame = 4
+
+[node name="FloorTile69" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 256, 80 )
+frame = 4
+
+[node name="FloorTile70" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 256, 64 )
+frame = 2
+
+[node name="FloorTile71" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 240, 64 )
+frame = 2
+
+[node name="FloorTile72" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 224, 64 )
+frame = 2
+
+[node name="FloorTile73" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 208, 64 )
+frame = 2
+
+[node name="FloorTile74" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 192, 64 )
+frame = 2
+
+[node name="FloorTile75" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 176, 64 )
+frame = 2
+
+[node name="FloorTile76" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 160, 64 )
+frame = 5
+
+[node name="FloorTile77" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 128, 32 )
+frame = 5
+
+[node name="FloorTile78" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 160, 32 )
+frame = 4
+
+[node name="FloorTile79" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 160, 16 )
+frame = 5
+
+[node name="FloorTile80" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 176, 32 )
+
+[node name="FloorTile81" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 176, 16 )
+frame = 2
+
+[node name="FloorTile82" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 192, 16 )
+frame = 2
+
+[node name="FloorTile83" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 208, 16 )
+frame = 2
+
+[node name="FloorTile84" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 208, 32 )
+frame = 4
+
+[node name="FloorTile85" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 224, 32 )
+frame = 1
+
+[node name="FloorTile86" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 240, 32 )
+frame = 2
+
+[node name="FloorTile87" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 272, 32 )
+frame = 5
+
+[node name="FloorTile88" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 224, 112 )
+frame = 2
+
+[node name="FloorTile89" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 224, 128 )
+
+[node name="FloorTile90" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 224, 144 )
+
+[node name="FloorTile91" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 208, 144 )
+
+[node name="FloorTile92" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 192, 144 )
+frame = 4
+
+[node name="FloorTile93" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 192, 128 )
+frame = 4
+
+[node name="FloorTile94" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 208, 128 )
+
+[node name="FloorTile95" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 208, 112 )
+frame = 2
+
+[node name="FloorTile96" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 192, 112 )
+frame = 1
+
+[node name="FloorTile97" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 176, 112 )
+frame = 6
+
+[node name="FloorTile98" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 176, 96 )
+frame = 5
+
+[node name="FloorTile99" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 112, 96 )
+frame = 5
+
+[node name="FloorTile100" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 112, 112 )
+frame = 4
+
+[node name="FloorTile101" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 128, 112 )
+frame = 1
+
+[node name="FloorTile102" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 144, 112 )
+frame = 2
+
+[node name="FloorTile103" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 160, 112 )
+frame = 2
+
+[node name="FloorTile104" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 160, 128 )
+frame = 4
+
+[node name="FloorTile105" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 160, 144 )
+frame = 6
+
+[node name="FloorTile106" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 144, 144 )
+frame = 2
+
+[node name="FloorTile107" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 128, 144 )
+frame = 2
+
+[node name="FloorTile108" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 112, 144 )
+frame = 2
+
+[node name="FloorTile109" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 96, 144 )
+frame = 5
+
+[node name="FloorTile110" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 272, 176 )
+frame = 5
+
+[node name="FloorTile111" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 272, 192 )
+frame = 4
+
+[node name="FloorTile112" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 272, 208 )
+frame = 4
+
+[node name="FloorTile12" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 80, 32 )
+
+[node name="FloorTile13" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 64, 32 )
+frame = 4
+
+[node name="FloorTile14" parent="Tiles" instance=ExtResource( 2 )]
+position = Vector2( 64, 48 )
+frame = 4
+
+[node name="WallTile" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 16 )
+frame = 5
+
+[node name="WallTile2" parent="Tiles" instance=ExtResource( 1 )]
+frame = 29
+
+[node name="WallTile3" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 16, 0 )
+frame = 18
+
+[node name="WallTile4" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 32, 0 )
+frame = 18
+
+[node name="WallTile5" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 48, 0 )
+frame = 27
+
+[node name="WallTile28" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 48, 16 )
+frame = 9
+
+[node name="WallTile29" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 48, 32 )
+frame = 9
+
+[node name="WallTile30" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 48, 64 )
+frame = 9
+
+[node name="WallTile31" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 48, 80 )
+frame = 36
+
+[node name="WallTile32" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 32, 80 )
+frame = 18
+
+[node name="WallTile33" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 16, 80 )
+frame = 18
+
+[node name="WallTile34" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 80 )
+frame = 29
+
+[node name="WallTile38" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 96 )
+frame = 5
+
+[node name="WallTile39" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 112 )
+frame = 5
+
+[node name="WallTile40" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 128 )
+frame = 29
+
+[node name="WallTile41" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 144 )
+frame = 5
+
+[node name="WallTile42" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 160 )
+frame = 5
+
+[node name="WallTile43" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 176 )
+frame = 29
+
+[node name="WallTile44" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 192 )
+frame = 5
+
+[node name="WallTile45" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 208 )
+frame = 3
+
+[node name="WallTile46" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 224 )
+frame = 3
+
+[node name="WallTile95" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 16, 224 )
+frame = 3
+
+[node name="WallTile233" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 16, 208 )
+frame = 3
+
+[node name="WallTile234" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 32, 208 )
+frame = 7
+
+[node name="WallTile96" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 32, 224 )
+frame = 3
+
+[node name="WallTile97" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 48, 224 )
+frame = 3
+
+[node name="WallTile98" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 64, 224 )
+frame = 3
+
+[node name="WallTile99" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 80, 224 )
+frame = 3
+
+[node name="WallTile100" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 96, 224 )
+frame = 3
+
+[node name="WallTile101" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 112, 224 )
+frame = 3
+
+[node name="WallTile102" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 128, 224 )
+frame = 3
+
+[node name="WallTile103" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 144, 224 )
+frame = 3
+
+[node name="WallTile104" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 160, 224 )
+frame = 3
+
+[node name="WallTile105" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 176, 224 )
+frame = 3
+
+[node name="WallTile106" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 192, 224 )
+frame = 3
+
+[node name="WallTile107" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 208, 224 )
+frame = 3
+
+[node name="WallTile108" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 224, 224 )
+frame = 3
+
+[node name="WallTile109" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 240, 224 )
+frame = 3
+
+[node name="WallTile110" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 256, 224 )
+frame = 3
+
+[node name="WallTile111" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 256, 208 )
+frame = 9
+
+[node name="WallTile112" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 256, 192 )
+frame = 9
+
+[node name="WallTile113" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 176, 176 )
+frame = 15
+
+[node name="WallTile114" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 160, 176 )
+frame = 14
+
+[node name="WallTile115" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 160, 208 )
+frame = 6
+
+[node name="WallTile116" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 176, 208 )
+frame = 7
+
+[node name="WallTile117" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 128, 192 )
+frame = 28
+
+[node name="WallTile118" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 112, 192 )
+frame = 18
+
+[node name="WallTile35" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 64 )
+frame = 5
+
+[node name="WallTile36" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 48 )
+frame = 5
+
+[node name="WallTile37" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 0, 32 )
+frame = 5
+
+[node name="WallTile6" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 64, 0 )
+frame = 18
+
+[node name="WallTile7" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 80, 0 )
+frame = 18
+
+[node name="WallTile8" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 96, 0 )
+frame = 18
+
+[node name="WallTile9" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 112, 0 )
+frame = 27
+
+[node name="WallTile10" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 128, 0 )
+frame = 18
+
+[node name="WallTile11" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 144, 0 )
+frame = 27
+
+[node name="WallTile12" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 160, 0 )
+frame = 18
+
+[node name="WallTile13" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 176, 0 )
+frame = 18
+
+[node name="WallTile14" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 192, 0 )
+frame = 18
+
+[node name="WallTile15" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 208, 0 )
+frame = 18
+
+[node name="WallTile16" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 224, 0 )
+frame = 30
+
+[node name="WallTile17" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 240, 0 )
+frame = 3
+
+[node name="WallTile18" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 240, 16 )
+frame = 18
+
+[node name="WallTile126" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 256, 16 )
+frame = 27
+
+[node name="WallTile127" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 272, 16 )
+frame = 15
+
+[node name="WallTile128" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 256, 0 )
+frame = 3
+
+[node name="WallTile129" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 272, 0 )
+frame = 29
+
+[node name="WallTile21" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 240, 48 )
+frame = 18
+
+[node name="WallTile124" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 256, 48 )
+frame = 18
+
+[node name="WallTile125" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 272, 48 )
+frame = 28
+
+[node name="WallTile130" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 272, 64 )
+frame = 9
+
+[node name="WallTile131" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 272, 80 )
+frame = 9
+
+[node name="WallTile132" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 272, 96 )
+frame = 34
+
+[node name="WallTile133" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 288, 96 )
+frame = 18
+
+[node name="WallTile134" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 304, 96 )
+frame = 18
+
+[node name="WallTile135" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 304, 64 )
+frame = 34
+
+[node name="WallTile136" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 304, 48 )
+frame = 9
+
+[node name="WallTile137" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 304, 32 )
+frame = 9
+
+[node name="WallTile138" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 304, 16 )
+frame = 9
+
+[node name="WallTile139" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 288, 0 )
+frame = 18
+
+[node name="WallTile140" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 304, 0 )
+frame = 27
+
+[node name="WallTile141" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 320, 0 )
+frame = 18
+
+[node name="WallTile142" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 336, 0 )
+frame = 18
+
+[node name="WallTile143" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 320, 64 )
+frame = 18
+
+[node name="WallTile144" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 336, 64 )
+frame = 18
+
+[node name="WallTile145" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 352, 64 )
+frame = 18
+
+[node name="WallTile146" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 336, 96 )
+frame = 30
+
+[node name="WallTile147" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 352, 96 )
+frame = 7
+
+[node name="WallTile148" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 352, 112 )
+frame = 5
+
+[node name="WallTile149" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 336, 112 )
+frame = 2
+
+[node name="WallTile150" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 304, 128 )
+frame = 26
+
+[node name="WallTile151" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 304, 144 )
+frame = 9
+
+[node name="WallTile152" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 288, 160 )
+frame = 30
+
+[node name="WallTile153" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 304, 160 )
+frame = 5
+
+[node name="WallTile154" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 320, 128 )
+frame = 18
+
+[node name="WallTile155" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 336, 128 )
+frame = 18
+
+[node name="WallTile156" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 352, 128 )
+frame = 18
+
+[node name="WallTile157" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 288, 176 )
+frame = 2
+
+[node name="WallTile158" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 288, 192 )
+frame = 14
+
+[node name="WallTile159" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 272, 224 )
+frame = 3
+
+[node name="WallTile160" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 288, 224 )
+frame = 3
+
+[node name="WallTile161" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 304, 224 )
+frame = 3
+
+[node name="WallTile162" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 320, 224 )
+frame = 3
+
+[node name="WallTile163" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 336, 224 )
+frame = 3
+
+[node name="WallTile164" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 352, 224 )
+frame = 3
+
+[node name="WallTile212" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 368, 224 )
+frame = 3
+
+[node name="WallTile213" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 384, 224 )
+frame = 3
+
+[node name="WallTile214" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 400, 224 )
+frame = 3
+
+[node name="WallTile215" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 416, 224 )
+frame = 3
+
+[node name="WallTile216" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 432, 224 )
+frame = 3
+
+[node name="WallTile217" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 448, 224 )
+frame = 3
+
+[node name="WallTile218" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 464, 224 )
+frame = 3
+
+[node name="WallTile219" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 480, 224 )
+frame = 3
+
+[node name="WallTile220" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 224 )
+frame = 3
+
+[node name="WallTile221" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 208 )
+frame = 2
+
+[node name="WallTile222" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 192 )
+frame = 2
+
+[node name="WallTile223" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 176 )
+frame = 2
+
+[node name="WallTile224" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 160 )
+frame = 30
+
+[node name="WallTile225" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 144 )
+frame = 2
+
+[node name="WallTile226" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 480, 160 )
+frame = 18
+
+[node name="WallTile227" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 448, 160 )
+frame = 18
+
+[node name="WallTile232" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 448, 192 )
+frame = 10
+
+[node name="WallTile228" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 432, 160 )
+frame = 18
+
+[node name="WallTile229" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 416, 160 )
+frame = 26
+
+[node name="WallTile230" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 416, 192 )
+frame = 9
+
+[node name="WallTile231" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 416, 208 )
+frame = 9
+
+[node name="WallTile165" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 304, 176 )
+frame = 5
+
+[node name="WallTile166" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 304, 192 )
+frame = 18
+
+[node name="WallTile167" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 336, 192 )
+frame = 18
+
+[node name="WallTile168" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 352, 192 )
+frame = 18
+
+[node name="WallTile169" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 368, 192 )
+frame = 18
+
+[node name="WallTile170" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 384, 192 )
+frame = 36
+
+[node name="WallTile171" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 384, 176 )
+frame = 9
+
+[node name="WallTile172" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 384, 160 )
+frame = 9
+
+[node name="WallTile173" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 384, 144 )
+frame = 9
+
+[node name="WallTile174" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 384, 128 )
+frame = 27
+
+[node name="WallTile176" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 400, 128 )
+frame = 18
+
+[node name="WallTile177" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 432, 128 )
+frame = 18
+
+[node name="WallTile178" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 448, 128 )
+frame = 18
+
+[node name="WallTile179" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 464, 128 )
+frame = 18
+
+[node name="WallTile180" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 480, 128 )
+frame = 18
+
+[node name="WallTile181" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 128 )
+frame = 30
+
+[node name="WallTile182" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 112 )
+frame = 2
+
+[node name="WallTile183" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 96 )
+frame = 2
+
+[node name="WallTile184" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 80 )
+frame = 2
+
+[node name="WallTile185" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 64 )
+frame = 2
+
+[node name="WallTile186" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 48 )
+frame = 2
+
+[node name="WallTile187" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 32 )
+frame = 2
+
+[node name="WallTile188" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 16 )
+frame = 2
+
+[node name="WallTile189" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 496, 0 )
+frame = 30
+
+[node name="WallTile190" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 480, 0 )
+frame = 18
+
+[node name="WallTile191" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 464, 0 )
+frame = 18
+
+[node name="WallTile192" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 448, 0 )
+frame = 18
+
+[node name="WallTile193" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 432, 0 )
+frame = 18
+
+[node name="WallTile194" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 416, 0 )
+frame = 18
+
+[node name="WallTile195" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 400, 0 )
+frame = 18
+
+[node name="WallTile196" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 384, 0 )
+frame = 27
+
+[node name="WallTile197" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 368, 0 )
+frame = 18
+
+[node name="WallTile198" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 352, 0 )
+frame = 18
+
+[node name="WallTile199" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 384, 64 )
+frame = 28
+
+[node name="WallTile200" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 384, 48 )
+frame = 9
+
+[node name="WallTile201" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 384, 32 )
+frame = 26
+
+[node name="WallTile202" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 400, 32 )
+frame = 18
+
+[node name="WallTile203" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 416, 32 )
+frame = 18
+
+[node name="WallTile204" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 448, 32 )
+frame = 28
+
+[node name="WallTile205" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 448, 64 )
+frame = 9
+
+[node name="WallTile206" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 448, 80 )
+frame = 9
+
+[node name="WallTile207" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 448, 96 )
+frame = 36
+
+[node name="WallTile208" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 416, 96 )
+frame = 18
+
+[node name="WallTile209" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 400, 96 )
+frame = 18
+
+[node name="WallTile210" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 384, 96 )
+frame = 34
+
+[node name="WallTile211" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 384, 80 )
+frame = 9
+
+[node name="WallTile175" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 336, 160 )
+frame = 10
+
+[node name="WallTile22" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 224, 48 )
+frame = 18
+
+[node name="WallTile19" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 224, 16 )
+frame = 14
+
+[node name="WallTile20" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 192, 32 )
+
+[node name="WallTile23" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 192, 48 )
+frame = 18
+
+[node name="WallTile52" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 192, 80 )
+frame = 30
+
+[node name="WallTile53" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 208, 80 )
+frame = 3
+
+[node name="WallTile54" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 224, 80 )
+frame = 3
+
+[node name="WallTile55" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 240, 80 )
+frame = 7
+
+[node name="WallTile56" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 240, 96 )
+frame = 28
+
+[node name="WallTile57" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 240, 112 )
+frame = 9
+
+[node name="WallTile58" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 224, 96 )
+frame = 18
+
+[node name="WallTile59" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 208, 96 )
+frame = 18
+
+[node name="WallTile60" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 192, 96 )
+frame = 14
+
+[node name="WallTile61" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 160, 96 )
+frame = 15
+
+[node name="WallTile62" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 144, 96 )
+frame = 18
+
+[node name="WallTile63" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 128, 96 )
+frame = 14
+
+[node name="WallTile64" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 128, 80 )
+frame = 30
+
+[node name="WallTile67" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 96, 80 )
+frame = 29
+
+[node name="WallTile68" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 80, 80 )
+frame = 6
+
+[node name="WallTile69" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 80, 96 )
+frame = 14
+
+[node name="WallTile70" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 96, 96 )
+frame = 28
+
+[node name="WallTile71" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 96, 112 )
+frame = 9
+
+[node name="WallTile72" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 96, 128 )
+frame = 18
+
+[node name="WallTile73" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 80, 128 )
+frame = 26
+
+[node name="WallTile74" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 112, 128 )
+frame = 18
+
+[node name="WallTile75" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 128, 128 )
+frame = 18
+
+[node name="WallTile76" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 144, 128 )
+frame = 19
+
+[node name="WallTile77" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 176, 128 )
+
+[node name="WallTile78" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 176, 144 )
+frame = 9
+
+[node name="WallTile79" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 176, 160 )
+frame = 29
+
+[node name="WallTile86" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 160, 160 )
+frame = 30
+
+[node name="WallTile87" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 144, 160 )
+frame = 18
+
+[node name="WallTile88" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 128, 160 )
+frame = 27
+
+[node name="WallTile89" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 112, 160 )
+frame = 18
+
+[node name="WallTile90" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 96, 160 )
+frame = 18
+
+[node name="WallTile91" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 80, 160 )
+frame = 26
+
+[node name="WallTile92" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 80, 192 )
+frame = 27
+
+[node name="WallTile93" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 64, 192 )
+frame = 16
+
+[node name="WallTile94" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 32, 176 )
+frame = 19
+
+[node name="WallTile119" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 48, 160 )
+frame = 25
+
+[node name="WallTile120" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 48, 144 )
+frame = 9
+
+[node name="WallTile121" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 48, 128 )
+frame = 28
+
+[node name="WallTile122" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 32, 128 )
+frame = 18
+
+[node name="WallTile123" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 16, 128 )
+frame = 18
+
+[node name="WallTile80" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 192, 160 )
+frame = 18
+
+[node name="WallTile81" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 208, 160 )
+frame = 18
+
+[node name="WallTile82" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 224, 160 )
+frame = 18
+
+[node name="WallTile83" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 240, 160 )
+frame = 18
+
+[node name="WallTile84" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 240, 144 )
+frame = 9
+
+[node name="WallTile85" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 256, 160 )
+frame = 27
+
+[node name="WallTile65" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 144, 80 )
+frame = 3
+
+[node name="WallTile66" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 160, 80 )
+frame = 29
+
+[node name="WallTile24" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 176, 48 )
+frame = 18
+
+[node name="WallTile25" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 160, 48 )
+frame = 18
+
+[node name="WallTile26" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 144, 48 )
+frame = 27
+
+[node name="WallTile51" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 144, 16 )
+frame = 9
+
+[node name="WallTile27" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 128, 48 )
+frame = 18
+
+[node name="WallTile47" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 112, 48 )
+frame = 18
+
+[node name="WallTile50" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 112, 16 )
+frame = 9
+
+[node name="WallTile48" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 96, 48 )
+frame = 18
+
+[node name="WallTile49" parent="Tiles" instance=ExtResource( 1 )]
+position = Vector2( 80, 48 )
+frame = 16
+
+[node name="DoorTile" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 48, 48 )
+frame = 20
+
+[node name="DoorTile2" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 112, 32 )
+frame = 20
+
+[node name="DoorTile3" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 144, 32 )
+frame = 20
+
+[node name="DoorTile4" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 144, 64 )
+frame = 20
+
+[node name="DoorTile5" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 112, 80 )
+
+[node name="DoorTile6" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 176, 80 )
+
+[node name="DoorTile7" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 208, 48 )
+
+[node name="DoorTile8" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 256, 32 )
+frame = 20
+
+[node name="DoorTile9" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 240, 128 )
+frame = 20
+
+[node name="DoorTile10" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 256, 176 )
+frame = 20
+
+[node name="DoorTile11" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 272, 160 )
+
+[node name="DoorTile19" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 320, 192 )
+
+[node name="DoorTile20" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 368, 128 )
+
+[node name="DoorTile21" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 320, 96 )
+
+[node name="DoorTile22" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 368, 64 )
+
+[node name="DoorTile23" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 384, 16 )
+frame = 20
+
+[node name="DoorTile24" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 432, 32 )
+
+[node name="DoorTile25" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 448, 48 )
+frame = 20
+
+[node name="DoorTile26" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 432, 96 )
+
+[node name="DoorTile27" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 416, 128 )
+
+[node name="DoorTile28" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 464, 160 )
+
+[node name="DoorTile29" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 416, 176 )
+frame = 20
+
+[node name="DoorTile12" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 128, 176 )
+frame = 20
+
+[node name="DoorTile13" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 128, 208 )
+frame = 20
+
+[node name="DoorTile14" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 96, 192 )
+
+[node name="DoorTile15" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 80, 176 )
+frame = 20
+
+[node name="DoorTile16" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 80, 208 )
+frame = 20
+
+[node name="DoorTile17" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 80, 144 )
+frame = 20
+
+[node name="DoorTile18" parent="Tiles" instance=ExtResource( 3 )]
+position = Vector2( 16, 176 )
+
+[node name="ConsoleTile" parent="Tiles" instance=ExtResource( 4 )]
+position = Vector2( 16, 64 )
+
+[node name="ConsoleTile2" parent="Tiles" instance=ExtResource( 4 )]
+position = Vector2( 80, 112 )
+
+[node name="ConsoleTile3" parent="Tiles" instance=ExtResource( 4 )]
+position = Vector2( 16, 144 )
+
+[node name="ConsoleTile4" parent="Tiles" instance=ExtResource( 4 )]
+position = Vector2( 208, 208 )
+
+[node name="ConsoleTile6" parent="Tiles" instance=ExtResource( 4 )]
+position = Vector2( 352, 160 )
+
+[node name="ConsoleTile7" parent="Tiles" instance=ExtResource( 4 )]
+position = Vector2( 480, 144 )
+
+[node name="ConsoleTile8" parent="Tiles" instance=ExtResource( 4 )]
+position = Vector2( 480, 16 )
+
+[node name="ConsoleTile9" parent="Tiles" instance=ExtResource( 4 )]
+position = Vector2( 336, 32 )
+
+[node name="ConsoleTile10" parent="Tiles" instance=ExtResource( 4 )]
+position = Vector2( 416, 64 )
+
+[node name="ConsoleTile11" parent="Tiles" instance=ExtResource( 4 )]
+position = Vector2( 432, 64 )
+frame = 23
+mainframe = true
+
+[node name="ConsoleTile12" parent="Tiles" instance=ExtResource( 4 )]
+position = Vector2( 464, 192 )
+frame = 23
+mainframe = true
+
+[node name="ConsoleTile5" parent="Tiles" instance=ExtResource( 4 )]
+position = Vector2( 128, 16 )
+
+[node name="Player1" type="Node2D" parent="."]
+script = ExtResource( 6 )
+
+[node name="DemoMan" parent="Player1" instance=ExtResource( 7 )]
+
+[node name="Hacker" parent="Player1" instance=ExtResource( 8 )]
+
+[node name="Cameras" type="Node2D" parent="."]
+z_index = 10
+
+[node name="SecCam" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam"]
+position = Vector2( 216, 136 )
+shape = SubResource( 13 )
+script = ExtResource( 11 )
+
+[node name="SecCam2" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_layer = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam2"]
+position = Vector2( 280, 136 )
+z_index = 1
+shape = SubResource( 13 )
+script = ExtResource( 11 )
+
+[node name="SecCam3" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam3"]
+position = Vector2( 424, 72 )
+z_index = 1
+shape = SubResource( 24 )
+script = ExtResource( 11 )
+
+[node name="SecCam4" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam4"]
+position = Vector2( 464, 200 )
+z_index = 1
+shape = SubResource( 15 )
+script = ExtResource( 11 )
+
+[node name="SecCam5" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam5"]
+position = Vector2( 352, 168 )
+z_index = 1
+shape = SubResource( 15 )
+script = ExtResource( 11 )
+
+[node name="SecCam6" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam6"]
+position = Vector2( 224, 200 )
+z_index = 1
+shape = SubResource( 15 )
+script = ExtResource( 11 )
+
+[node name="SecCam7" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam7"]
+position = Vector2( 352, 40 )
+z_index = 1
+shape = SubResource( 15 )
+script = ExtResource( 11 )
+
+[node name="SecCam8" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam8"]
+position = Vector2( 48, 112 )
+z_index = 1
+z_as_relative = false
+shape = SubResource( 16 )
+script = ExtResource( 11 )
+
+[node name="SecCam9" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam9"]
+position = Vector2( 440, 152 )
+z_index = 1
+z_as_relative = false
+shape = SubResource( 17 )
+script = ExtResource( 11 )
+
+[node name="SecCam10" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam10"]
+position = Vector2( 216, 72 )
+z_index = 1
+z_as_relative = false
+shape = SubResource( 18 )
+script = ExtResource( 11 )
+
+[node name="SecCam11" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam11"]
+position = Vector2( 88, 32 )
+z_index = 1
+z_as_relative = false
+shape = SubResource( 19 )
+script = ExtResource( 11 )
+
+[node name="SecCam12" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam12"]
+position = Vector2( 480, 88 )
+z_index = 1
+z_as_relative = false
+shape = SubResource( 20 )
+script = ExtResource( 11 )
+
+[node name="SecCam13" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam13"]
+position = Vector2( 296, 56 )
+z_index = 1
+z_as_relative = false
+shape = SubResource( 21 )
+script = ExtResource( 11 )
+
+[node name="SecCam14" type="Area2D" parent="Cameras"]
+material = SubResource( 12 )
+z_index = 5
+collision_mask = 3
+
+[node name="Area" type="CollisionShape2D" parent="Cameras/SecCam14"]
+position = Vector2( 40, 200 )
+z_index = 1
+z_as_relative = false
+shape = SubResource( 23 )
+script = ExtResource( 11 )

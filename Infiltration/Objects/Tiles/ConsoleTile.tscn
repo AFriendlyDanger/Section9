@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Objects/Tiles/Tile.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/wallTiles.png" type="Texture" id=2]
+
+[node name="ConsoleTile" type="Sprite"]
+z_index = 1
+texture = ExtResource( 2 )
+centered = false
+vframes = 8
+hframes = 8
+frame = 22
+script = ExtResource( 1 )
+console = true
