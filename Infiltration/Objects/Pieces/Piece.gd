@@ -97,6 +97,10 @@ func Attack():
 	#Virtual function
 	pass
 
+func Killed():
+	alive = false
+	visible = false
+
 func Interact():
 	#Virtual function
 	pass

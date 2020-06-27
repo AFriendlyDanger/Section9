@@ -20,7 +20,7 @@ func _ready():
 			if !tiles[t].wall:
 				SetGroundtile(t,tiledata)
 			elif tiles[t].door:
-				SetDoortile(t,tiledata)
+				SetDoortile(t)
 			elif !tiles[t].console:
 				SetWalltile(t,tiledata)
 	for child in self.get_children():
@@ -50,7 +50,7 @@ func SetGroundtile(tileLoc,tiledata):
 		tiledata = (tiledata << 2) | tiles[bordertile].status()
 	tiles[tileLoc].setTile(tiledata)
 	
-func SetDoortile(tileLoc,tiledata):
+func SetDoortile(tileLoc):
 	var bordertile = tileLoc-Global.BOARDWIDTH
 	if(!(bordertile<0) && tiles[bordertile].wall):
 		tiles[tileLoc].frame = 20
@@ -76,13 +76,29 @@ func ValidMove(tileLoc,finalMove=false):
 			if piece.boardpos == tileLoc:
 				validMove = false
 				break
-		pass
 	return validMove
 	
+func attackHit(tileLocs,attacker):
+	var stopSearch = false
+	for piece in pieces:
+		if !piece.alive:
+			continue
+		for loc in tileLocs:
+			if loc == piece.boardpos:
+				if attacker.classType != Global.Class.Ghost:
+					if piece.facing * -1 != attacker.facing:
+						print("assassinated")
+						piece.Killed()
+						stopSearch = true
+						break 
+				else:
+					piece.killed()
 
 func NextSelect(current,direction):
 	var selection = current
 	for piece in pieces:
+		if !piece.alive:
+			continue
 		if piece.get_parent().name == current.get_parent().name:
 			if direction==Global.UP:
 				if piece.position.y < current.position.y && (selection==current || piece.position.y >= selection.position.y):

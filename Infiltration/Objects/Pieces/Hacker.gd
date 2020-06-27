@@ -59,8 +59,12 @@ func Disable():
 		HackOver()
 	else:
 		var space_state = get_world_2d().direct_space_state
-		var result = space_state.intersect_point(hackSelector.global_position,1|1<<3,[self],1,true,true)
+		var layer_mask = 1|1<<2 
+		var result = space_state.intersect_point(hackSelector.global_position,1,[self],layer_mask,true,true)
 		if !result.empty():
-			var visibleRes = result[0]["collider"].visible
-			result[0]["collider"].visible = !visibleRes
-			result[0]["collider"].collision_layer = int(visibleRes)|1<<3
+			var SecCam = result[0]["collider"]
+			var visibleRes = SecCam.visible
+			SecCam.visible = !visibleRes
+			SecCam.position += Vector2.ONE*-100
+			SecCam.collision_layer = (int(!visibleRes)<<0)|(1<<2)
+			SecCam.position += Vector2.ONE*100
