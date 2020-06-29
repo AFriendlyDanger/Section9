@@ -6,6 +6,7 @@ var total_moves = 0
 var action_taken = false
 export var team = 0
 var alive = true
+var active = false
 var facing = Global.DOWN
 var boardpos = 0
 var charSprite
@@ -28,6 +29,7 @@ func _ready():
 
 func _activate(status = true):
 	playerNode.selector.visible = !status
+	active = status
 	playerNode.set_process(!status)
 	set_process(status)
 	if !status:
@@ -70,11 +72,19 @@ func inputCheck():
 		point()
 
 func move(destination,movement):
-	if(mapNode.ValidMove(destination,MAX_MOVES-total_moves==1)&& total_moves < MAX_MOVES):
+	var pmoves = playerNode.moves_taken
+	var pmax = playerNode.MAX_MOVES
+	if mapNode.ValidMove(destination,MAX_MOVES-total_moves==1||playerNode.MAX_MOVES-playerNode.moves_taken == 1) \
+	&& total_moves < MAX_MOVES && pmoves < pmax:
 		position += movement
 		boardpos = destination
 		SpriteLayer()
 		total_moves += 1
+		pmoves += 1
+		playerNode.moves_taken = pmoves
+		mapNode.SetStepPool(pmax-pmoves,MAX_MOVES-total_moves)
+		if(visible && mapNode.CheckHit(boardpos,get_parent().name)):
+			Killed()
 
 func point():
 	if facing==Global.UP:
@@ -100,6 +110,10 @@ func Attack():
 func Killed():
 	alive = false
 	visible = false
+	playerNode.pieces.erase(self)
+	print(playerNode.pieces)
+	if active:
+		_activate(false)
 
 func Interact():
 	#Virtual function

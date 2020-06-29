@@ -4,7 +4,10 @@ extends Node2D
 var tiles = []
 var pieces = []
 var players = []
-
+var security = []
+onready var camera = $Camera
+onready var piece_steps = $CanvasLayer/PieceSteps/Label
+onready var step_pool = $CanvasLayer/StepPool/Label
 
 func _ready():
 	tiles.resize(self.get_node("Tiles").get_child_count())
@@ -28,13 +31,33 @@ func _ready():
 			players.append(child)
 			#for piece in child.get_children():
 			#	pieces.append(piece)
-	print(bool(0))
+	#camera.limit_left = 0
+	#camera.limit_right = 16 * Global.BOARDWIDTH
 	pieces = get_tree().get_nodes_in_group("Piece")
+	security = get_tree().get_nodes_in_group("Security")
 	#SetWalltile(95+BOARDWIDTH,0)
 			
 			
-			
-			
+func _process(delta):
+	if Input.is_action_just_pressed("scroll_right"):
+		camera.translate(Vector2.RIGHT*delta*100)
+	elif Input.is_action_pressed("scroll_right"):
+		camera.translate(Vector2.RIGHT*delta*50)
+	elif Input.is_action_just_pressed("scroll_left") && camera.position.x > 0:
+		camera.translate(Vector2.LEFT*delta*100)
+	elif Input.is_action_pressed("scroll_left") && camera.position.x > 0:
+		camera.translate(Vector2.LEFT*delta*50)
+	FixCamera()
+
+#setting camera bounds this way because I was getting input delay when the bounds
+#on the camera node were pushed against
+func FixCamera():
+	var maxDistance = 16 * Global.BOARDWIDTH/2
+	if camera.position.x < 0:
+		camera.position = Vector2.ZERO
+	elif camera.position.x > maxDistance:
+		camera.position = Vector2(maxDistance,0)
+
 func SetGroundtile(tileLoc,tiledata):
 	var bordertile = tileLoc-Global.BOARDWIDTH-1
 	#find tile topleft of target
@@ -73,26 +96,66 @@ func ValidMove(tileLoc,finalMove=false):
 	var validMove = tiles[tileLoc].MovementTile()
 	if(finalMove && validMove):
 		for piece in pieces:
-			if piece.boardpos == tileLoc:
+			if piece.boardpos == tileLoc && piece.alive:
 				validMove = false
 				break
 	return validMove
 	
+func CheckHit(tileLoc,parentName):
+	var killed = false
+	for piece in pieces:
+		if piece.classType == Global.Class.Security && piece.alive \
+		&& piece.get_parent().name != parentName:
+			for tile in piece.sight:
+				if tile == tileLoc:
+					killed = true
+	return killed
+	
 func attackHit(tileLocs,attacker):
 	var stopSearch = false
+	for loc in tileLocs:
+		if(abs(attacker.facing)==Global.RIGHT):
+			if int(attacker.boardpos/Global.BOARDWIDTH)!=int(loc/Global.BOARDWIDTH):
+				if attacker.classType != Global.Class.Hacker:
+					tileLocs.erase(loc)
+		else:
+			if loc < 0 || loc >= tiles.size():
+				tileLocs.erase[loc]
+	if tileLocs.empty():
+		return
 	for piece in pieces:
 		if !piece.alive:
 			continue
 		for loc in tileLocs:
 			if loc == piece.boardpos:
-				if attacker.classType != Global.Class.Ghost:
+				if attacker.classType == Global.Class.Ghost:
 					if piece.facing * -1 != attacker.facing:
 						print("assassinated")
 						piece.Killed()
 						stopSearch = true
 						break 
 				else:
-					piece.killed()
+					if piece != attacker:
+						piece.Killed()
+			if stopSearch:
+				break
+				
+
+func RecalcLOS():
+	for sec in security:
+		if sec.alive:
+			sec.sight = LineOfSight(sec.boardpos, sec.facing)
+			CheckHit(sec.boardpos, sec.get_parent().name)
+
+func LineOfSight(tileLoc,direction):
+	var sight = []
+	print(tiles[tileLoc].status())
+	while tiles[tileLoc].status() != 3 || tiles[tileLoc].open:
+		sight.append(tileLoc)
+		tileLoc += direction
+		if tileLoc < 0 || tileLoc >= tiles.size():
+			break
+	return sight
 
 func NextSelect(current,direction):
 	var selection = current
@@ -132,5 +195,14 @@ func NextSelect(current,direction):
 					selection = piece
 			else:
 				print("Invalid direction sent: ", direction)
+	camera.position = Vector2(selection.position.x-Global.BOARDWIDTH*4,0)
+	FixCamera()
+	SetPieceSteps(selection.MAX_MOVES - selection.total_moves)
 	return selection
+	
+func SetPieceSteps(steps):
+	piece_steps.text = "STEPS:%s" % String(steps)
 
+func SetStepPool(pool,steps):
+	SetPieceSteps(steps)
+	step_pool.text = "POOL:%s" % String(pool)
