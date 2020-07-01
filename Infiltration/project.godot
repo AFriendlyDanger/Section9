@@ -16,7 +16,10 @@ _global_script_class_icons={
 [application]
 
 config/name="Infiltration"
-run/main_scene="res://Level1.tscn"
+run/main_scene="res://Title.tscn"
+boot_splash/fullsize=false
+boot_splash/use_filter=false
+boot_splash/bg_color=Color( 0, 0, 0, 1 )
 config/icon="res://icon.png"
 
 [autoload]
@@ -112,5 +115,5 @@ ui_start={
 
 quality/driver/driver_name="GLES2"
 quality/2d/use_pixel_snap=true
-environment/default_clear_color=Color( 0.301961, 0.301961, 0.301961, 1 )
+environment/default_clear_color=Color( 0, 0, 0, 1 )
 environment/default_environment="res://default_env.tres"

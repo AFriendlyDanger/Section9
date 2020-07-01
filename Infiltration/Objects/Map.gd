@@ -5,9 +5,14 @@ var tiles = []
 var pieces = []
 var players = []
 var security = []
+var mainframes = []
+var turns = 0
+var player_turn = 0
 onready var camera = $Camera
 onready var piece_steps = $CanvasLayer/PieceSteps/Label
 onready var step_pool = $CanvasLayer/StepPool/Label
+
+#signal game_finished()
 
 func _ready():
 	tiles.resize(self.get_node("Tiles").get_child_count())
@@ -26,15 +31,22 @@ func _ready():
 				SetDoortile(t)
 			elif !tiles[t].console:
 				SetWalltile(t,tiledata)
-	for child in self.get_children():
-		if child.name != "Tiles":
-			players.append(child)
-			#for piece in child.get_children():
-			#	pieces.append(piece)
+	
 	#camera.limit_left = 0
 	#camera.limit_right = 16 * Global.BOARDWIDTH
 	pieces = get_tree().get_nodes_in_group("Piece")
 	security = get_tree().get_nodes_in_group("Security")
+	players = get_tree().get_nodes_in_group("Player")
+	mainframes = get_tree().get_nodes_in_group("Mainframe")
+	
+	if get_tree().is_network_server():
+		# For the server, give control of player 2 to the other peer. 
+		players[1].set_network_master(get_tree().get_network_connected_peers()[0],true)
+	else:
+		# For the client, give control of player 2 to itself.
+		players[1].set_network_master(get_tree().get_network_unique_id(),true)
+	print("unique id: ", get_tree().get_network_unique_id())
+	players[player_turn].rpc("StartTurn")
 	#SetWalltile(95+BOARDWIDTH,0)
 			
 			
@@ -92,27 +104,26 @@ func SetWalltile(tileLoc,tiledata):
 		bordertile += (Global.BOARDWIDTH - 3)
 	tiles[tileLoc].setTile(tiledata)
 	
-func ValidMove(tileLoc,finalMove=false):
+func ValidMove(tileLoc,finalMove,moving_piece):
+	var occupied_space = false
+	for piece in pieces:
+		if piece.alive && piece.boardpos == tileLoc:
+			occupied_space = true
 	var validMove = tiles[tileLoc].MovementTile()
 	if(finalMove && validMove):
 		for piece in pieces:
 			if piece.boardpos == tileLoc && piece.alive:
 				validMove = false
 				break
+	if occupied_space && validMove:
+		moving_piece.must_move = true
+	elif moving_piece.must_move && validMove:
+		moving_piece.must_move = false
 	return validMove
-	
-func CheckHit(tileLoc,parentName):
-	var killed = false
-	for piece in pieces:
-		if piece.classType == Global.Class.Security && piece.alive \
-		&& piece.get_parent().name != parentName:
-			for tile in piece.sight:
-				if tile == tileLoc:
-					killed = true
-	return killed
-	
+
 func attackHit(tileLocs,attacker):
 	var stopSearch = false
+	var kill = false
 	for loc in tileLocs:
 		if(abs(attacker.facing)==Global.RIGHT):
 			if int(attacker.boardpos/Global.BOARDWIDTH)!=int(loc/Global.BOARDWIDTH):
@@ -122,34 +133,84 @@ func attackHit(tileLocs,attacker):
 			if loc < 0 || loc >= tiles.size():
 				tileLocs.erase[loc]
 	if tileLocs.empty():
-		return
+		return kill
 	for piece in pieces:
 		if !piece.alive:
 			continue
 		for loc in tileLocs:
 			if loc == piece.boardpos:
 				if attacker.classType == Global.Class.Ghost:
-					if piece.facing * -1 != attacker.facing:
-						print("assassinated")
-						piece.Killed()
+					if piece.classType == Global.Class.Security && piece.defending\
+					&& piece.facing != attacker.facing:
 						stopSearch = true
-						break 
+						break
+					elif piece.facing * -1 != attacker.facing:
+						print("assassinated")
+						piece.rpc("Killed")
+						stopSearch = true
+						kill = true
+						break
+				elif attacker.classType == Global.Class.Security && HitBlocked(loc,piece.facing):
+					stopSearch = true
+					break
 				else:
 					if piece != attacker:
-						piece.Killed()
+						piece.rpc("Killed")
+						kill = true
 			if stopSearch:
 				break
-				
+	return kill
+
+
+func TurnChange():
+	player_turn += 1
+	if player_turn > players.size()-1:
+		player_turn = 0
+		turns += 1
+		for mainframe in mainframes:
+			if mainframe.uploading && mainframe.UploadOver():
+				GameEnd(1)
+				return
+	RecalcLOS()
+	players[player_turn].StartTurn()
+
+
+func HitBlocked(tile, facing):
+	for sec in security:
+		if sec.boardpos == tile && sec.defending && sec.alive && sec.facing != facing:
+			return true
+	return false
+
+
+func CheckHit(tileLoc,parentName,target):
+	var killed = false
+	for piece in security:
+		if piece.alive && piece.action_taken\
+		&& piece.get_parent().name != parentName:
+			if target.classType == Global.Class.Security && target.defending \
+			&& piece.facing != target.facing:
+				continue
+			else:
+				for tile in piece.sight:
+					if HitBlocked(tile,piece.facing):
+						break
+					if tile == tileLoc:
+						killed = true
+						return killed
+	return killed
+
 
 func RecalcLOS():
 	for sec in security:
-		if sec.alive:
+		if sec.alive && !sec.defending:
 			sec.sight = LineOfSight(sec.boardpos, sec.facing)
-			CheckHit(sec.boardpos, sec.get_parent().name)
+	for piece in pieces:
+		if CheckHit(piece.boardpos, piece.get_parent().name, piece):
+			piece.Killed()
+
 
 func LineOfSight(tileLoc,direction):
 	var sight = []
-	print(tiles[tileLoc].status())
 	while tiles[tileLoc].status() != 3 || tiles[tileLoc].open:
 		sight.append(tileLoc)
 		tileLoc += direction
@@ -157,10 +218,11 @@ func LineOfSight(tileLoc,direction):
 			break
 	return sight
 
+
 func NextSelect(current,direction):
 	var selection = current
 	for piece in pieces:
-		if !piece.alive:
+		if !piece.alive || piece.action_taken:
 			continue
 		if piece.get_parent().name == current.get_parent().name:
 			if direction==Global.UP:
@@ -199,10 +261,19 @@ func NextSelect(current,direction):
 	FixCamera()
 	SetPieceSteps(selection.MAX_MOVES - selection.total_moves)
 	return selection
-	
+
+
 func SetPieceSteps(steps):
 	piece_steps.text = "STEPS:%s" % String(steps)
+
 
 func SetStepPool(pool,steps):
 	SetPieceSteps(steps)
 	step_pool.text = "POOL:%s" % String(pool)
+
+
+func GameEnd(team = 0):
+	if team == 1:
+		print("Infultrators Win")
+	else:
+		print("Defense Wins")

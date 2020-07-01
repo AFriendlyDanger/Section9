@@ -2,16 +2,20 @@ extends "res://Objects/Pieces/Piece.gd"
 
 onready var hackSelector = get_node("HackSelector")
 var hacking = false
-var selectorpos = 0
+remotesync var selectorpos = 0
+remotesync var hackpos = 0
 
 func _ready():
 	classType = Global.Class.Hacker
 	
 func Attack():
-	print("attack")
+	print("Hacker has no attack")
 
 func Interact():
-	hack(int(boardpos+facing))
+	if rpc("UploadVirus",int(boardpos+facing)):
+		ActionUsed()
+	else:
+		hack(int(boardpos+facing))
 
 func hack(terminalPos):
 	if mapNode.tiles[terminalPos].console && mapNode.tiles[terminalPos].intact:
@@ -20,16 +24,18 @@ func hack(terminalPos):
 		hackSelector.visible = true
 		selectorpos = int(boardpos + facing)
 		print("hacking")
-		
+
 func inputCheck():
 	if !hacking:
 		.inputCheck()
 	else:
 		hackingInput()
-		
+
 func hackingInput():
 	if Input.is_action_just_pressed("interact"):
-		Disable()
+		rset("selectorpos",selectorpos)
+		rset("hackpos",hackSelector.global_position)
+		rpc("Disable")
 	elif Input.is_action_just_pressed("ui_cancel"):
 		HackOver()
 	elif Input.is_action_just_pressed("ui_right"):
@@ -48,13 +54,15 @@ func MoveSelector(direction,movement):
 		(selectorpos + direction >= 0) && (selectorpos + direction < mapNode.tiles.size()):
 		hackSelector.position += movement
 		selectorpos += direction
-		
-		
+		mapNode.camera.position = Vector2(hackSelector.position.x-Global.BOARDWIDTH*4,0)
+		mapNode.FixCamera()
+
+
 func HackOver():
 	hacking = false
 	hackSelector.visible = false
-	
-func Disable():
+
+remotesync func Disable():
 	if(mapNode.tiles[selectorpos].OpenDoor()):
 		mapNode.attackHit([selectorpos],self)
 		mapNode.RecalcLOS()
@@ -62,7 +70,7 @@ func Disable():
 	else:
 		var space_state = get_world_2d().direct_space_state
 		var layer_mask = 1|1<<2 
-		var result = space_state.intersect_point(hackSelector.global_position,1,[self],layer_mask,true,true)
+		var result = space_state.intersect_point(hackpos,1,[self],layer_mask,true,true)
 		if !result.empty():
 			var SecCam = result[0]["collider"]
 			var visibleRes = SecCam.visible

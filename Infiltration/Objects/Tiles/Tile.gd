@@ -7,6 +7,9 @@ export var console = false
 export var mainframe = false
 export var door = false
 var open = false
+const UPLOAD_TIME = 3
+var upload_turns = 0
+var uploading = false
 
 const TILE_MASK = -4
 const WALL_MASK = -2
@@ -37,6 +40,35 @@ func OpenDoor():
 		return true
 	else:
 		return false
+		
+func StartUpload(uploader,team):
+	var changed = false
+	if team == 0:
+		if !uploading:
+			if uploader == Global.Class.Hacker:
+				upload_turns=UPLOAD_TIME
+			elif uploader == Global.Class.Ghost:
+				upload_turns=1
+			else:
+				upload_turns = 0
+			uploading = true
+			changed = true
+			print("Upload Started")
+	else:
+		if uploading:
+			uploading = false
+			changed = true
+			print("Upload cancled")
+	return changed
+
+func UploadOver():
+	var over = false
+	upload_turns +=1
+	print("Upload tick: ", upload_turns)
+	if upload_turns >= UPLOAD_TIME:
+		over = true
+	return over
+		
 
 func setTile(data):
 	#print("Data ", data)
