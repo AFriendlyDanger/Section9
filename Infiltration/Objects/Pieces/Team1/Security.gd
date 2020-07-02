@@ -22,7 +22,8 @@ func Interact():
 	if rpc("UploadVirus",int(boardpos+facing)):
 		ActionUsed()
 	else:
-		rpc("Reposition")
+		if !attack_switch:
+			rpc("Reposition")
 	
 
 remotesync func Reposition():

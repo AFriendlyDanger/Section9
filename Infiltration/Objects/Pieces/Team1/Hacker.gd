@@ -20,7 +20,7 @@ func Interact():
 func hack(terminalPos):
 	if mapNode.tiles[terminalPos].console && mapNode.tiles[terminalPos].intact:
 		hacking = true
-		hackSelector.position = Vector2(sign(facing) * int(abs(facing)==1) * 16,int(facing/16)*16)
+		hackSelector.position = Vector2(sign(facing) * int(abs(facing)==1) * 16,int(facing/Global.BOARDWIDTH)*16)
 		hackSelector.visible = true
 		selectorpos = int(boardpos + facing)
 		print("hacking")
@@ -38,6 +38,8 @@ func hackingInput():
 		rpc("Disable")
 	elif Input.is_action_just_pressed("ui_cancel"):
 		HackOver()
+		mapNode.camera.position = Vector2(global_position.x-Global.BOARDWIDTH*4,0)
+		mapNode.FixCamera()
 	elif Input.is_action_just_pressed("ui_right"):
 		MoveSelector(Global.RIGHT,Vector2.RIGHT*16)
 	elif Input.is_action_just_pressed("ui_left"):
@@ -54,7 +56,7 @@ func MoveSelector(direction,movement):
 		(selectorpos + direction >= 0) && (selectorpos + direction < mapNode.tiles.size()):
 		hackSelector.position += movement
 		selectorpos += direction
-		mapNode.camera.position = Vector2(hackSelector.position.x-Global.BOARDWIDTH*4,0)
+		mapNode.camera.position = Vector2(hackSelector.global_position.x-Global.BOARDWIDTH*4,0)
 		mapNode.FixCamera()
 
 
@@ -67,6 +69,7 @@ remotesync func Disable():
 		mapNode.attackHit([selectorpos],self)
 		mapNode.RecalcLOS()
 		HackOver()
+		ActionUsed()
 	else:
 		var space_state = get_world_2d().direct_space_state
 		var layer_mask = 1|1<<2 
@@ -79,3 +82,4 @@ remotesync func Disable():
 			SecCam.collision_layer = (int(!visibleRes)<<0)|(1<<2)
 			SecCam.position += Vector2.ONE*100
 			HackOver()
+			ActionUsed()

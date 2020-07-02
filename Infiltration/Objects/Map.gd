@@ -257,7 +257,7 @@ func NextSelect(current,direction):
 					selection = piece
 			else:
 				print("Invalid direction sent: ", direction)
-	camera.position = Vector2(selection.position.x-Global.BOARDWIDTH*4,0)
+	camera.position = Vector2(selection.global_position.x-Global.BOARDWIDTH*4,0)
 	FixCamera()
 	SetPieceSteps(selection.MAX_MOVES - selection.total_moves)
 	return selection
@@ -277,3 +277,9 @@ func GameEnd(team = 0):
 		print("Infultrators Win")
 	else:
 		print("Defense Wins")
+	for player in players:
+		player.set_process(false)
+	for piece in pieces:
+		piece.set_process(false)
+	for player in players:
+		player.set_process(false)

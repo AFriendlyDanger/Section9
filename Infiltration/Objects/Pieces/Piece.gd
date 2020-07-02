@@ -30,7 +30,8 @@ func _ready():
 	SpriteLayer()
 
 func _activate(status = true):
-	playerNode.selector.visible = !status
+	if is_network_master():
+		playerNode.selector.visible = !status
 	active = status
 	playerNode.set_process(!status)
 	set_process(status)
@@ -99,7 +100,7 @@ remotesync func update_position(destination,movement,pmoves,pmax):
 		playerNode.moves_taken = pmoves
 		mapNode.SetStepPool(pmax-pmoves,MAX_MOVES-total_moves)
 		if visible:
-			mapNode.camera.position = Vector2(position.x-Global.BOARDWIDTH*4,0)
+			mapNode.camera.position = Vector2(global_position.x-Global.BOARDWIDTH*4,0)
 			mapNode.FixCamera()
 		if(!cloaked && mapNode.CheckHit(boardpos,get_parent().name,self)):
 			Killed()
@@ -138,6 +139,8 @@ remotesync func Killed():
 	if active:
 		_activate(false)
 		playerNode.FindNewSelection()
+	if playerNode.pieces.empty():
+		mapNode.GameEnd(playerNode.player)
 		
 func NewTurn():
 	total_moves = 0
