@@ -135,7 +135,7 @@ func attackHit(tileLocs,attacker):
 	if tileLocs.empty():
 		return kill
 	for piece in pieces:
-		if !piece.alive:
+		if !piece.alive || attacker.playerNode == piece.playerNode:
 			continue
 		for loc in tileLocs:
 			if loc == piece.boardpos:

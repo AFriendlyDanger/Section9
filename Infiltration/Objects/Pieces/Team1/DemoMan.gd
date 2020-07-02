@@ -22,4 +22,5 @@ remotesync func destroyWall(wallpos):
 			tile.frame = 8
 			tile.z_index = -1
 			mapNode.RecalcLOS()
-			ActionUsed()
+			if is_network_master():
+				ActionUsed()

@@ -3,7 +3,7 @@ extends Node2D
 const pathTiles = preload("res://Objects/path.tscn")
 const MAX_MOVES = 10
 var total_moves = 0
-var action_taken = false
+remotesync var action_taken = false
 var team = 0
 var alive = true
 var active = false
@@ -148,5 +148,5 @@ func Interact():
 	pass
 
 func ActionUsed():
-	action_taken = true
+	rset("action_taken", true)
 	_activate(false)
