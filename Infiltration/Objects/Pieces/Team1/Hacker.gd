@@ -66,7 +66,11 @@ func HackOver():
 
 remotesync func Disable():
 	if(mapNode.tiles[selectorpos].OpenDoor()):
-		mapNode.attackHit([selectorpos],self)
+		if mapNode.attackHit([selectorpos],self):
+			var tile = mapNode.tiles[selectorpos]
+			tile.intact = false
+			tile.frame = 8
+			tile.z_index = -1
 		mapNode.RecalcLOS()
 		HackOver()
 		ActionUsed()

@@ -24,8 +24,8 @@ func MovementTile():
 	return !(wall && !open && intact)
 	
 func OpenDoor():
-	if(door):
-		if(open):
+	if door && intact:
+		if open:
 			open = false
 			if(frame == 13):
 				frame = 12

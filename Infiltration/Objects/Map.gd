@@ -104,22 +104,56 @@ func SetWalltile(tileLoc,tiledata):
 		bordertile += (Global.BOARDWIDTH - 3)
 	tiles[tileLoc].setTile(tiledata)
 	
-func ValidMove(tileLoc,finalMove,moving_piece):
+func ValidMove(tileLoc,moving_piece):
+	
 	var occupied_space = false
 	for piece in pieces:
 		if piece.alive && piece.boardpos == tileLoc:
 			occupied_space = true
 	var validMove = tiles[tileLoc].MovementTile()
-	if(finalMove && validMove):
-		for piece in pieces:
-			if piece.boardpos == tileLoc && piece.alive:
-				validMove = false
-				break
+	if validMove:
+		var opening_dist = NearestOpening(tileLoc,moving_piece)
+		print("Nearest Open Space: ", opening_dist)
+		if moving_piece.MAX_MOVES-moving_piece.total_moves <= opening_dist || \
+		moving_piece.playerNode.MAX_MOVES-moving_piece.playerNode.moves_taken <= opening_dist:
+			validMove = false
 	if occupied_space && validMove:
 		moving_piece.must_move = true
 	elif moving_piece.must_move && validMove:
 		moving_piece.must_move = false
 	return validMove
+
+func NearestOpening(tileLoc,mover,alreadyChecked=[],distance=0,shortest=100):
+	var continueSearch = false
+	if distance > shortest:
+		return distance
+	for piece in pieces:
+		if piece.alive && piece.boardpos == tileLoc && piece != mover &&\
+		 !(piece.classType == Global.Class.Ghost && !piece.visible):
+			continueSearch = true
+			if piece.classType == Global.Class.Security && piece.defending && piece.parentNode != mover.parentNode:
+				continueSearch = false
+				distance += 100
+			break 
+	if !continueSearch:
+		return distance
+	alreadyChecked.append(tileLoc)
+	shortest=DirectionDist(tileLoc+Global.UP,mover,alreadyChecked,distance,shortest)
+	shortest=DirectionDist(tileLoc+Global.DOWN,mover,alreadyChecked,distance,shortest)
+	shortest=DirectionDist(tileLoc+Global.RIGHT,mover,alreadyChecked,distance,shortest)
+	shortest=DirectionDist(tileLoc+Global.LEFT,mover,alreadyChecked,distance,shortest)
+	alreadyChecked.pop_back()
+	return shortest
+
+
+func DirectionDist(tileLoc,mover,alreadyChecked,distance,shortest):
+	if (!tiles[tileLoc].wall || tiles[tileLoc].open || !tiles[tileLoc].intact) && !alreadyChecked.has(tileLoc):
+		var distresult = NearestOpening(tileLoc,mover,alreadyChecked,distance+1,shortest)
+		if shortest > distresult:
+			shortest = distresult
+	return shortest
+
+	
 
 func attackHit(tileLocs,attacker):
 	var stopSearch = false
@@ -135,7 +169,7 @@ func attackHit(tileLocs,attacker):
 	if tileLocs.empty():
 		return kill
 	for piece in pieces:
-		if !piece.alive || attacker.playerNode == piece.playerNode:
+		if !piece.alive || (attacker.playerNode == piece.playerNode && attacker.classType != Global.Class.Hacker):
 			continue
 		for loc in tileLocs:
 			if loc == piece.boardpos:
@@ -205,7 +239,7 @@ func RecalcLOS():
 		if sec.alive && !sec.defending:
 			sec.sight = LineOfSight(sec.boardpos, sec.facing)
 	for piece in pieces:
-		if CheckHit(piece.boardpos, piece.get_parent().name, piece):
+		if !piece.cloaked && CheckHit(piece.boardpos, piece.get_parent().name, piece):
 			piece.Killed()
 
 

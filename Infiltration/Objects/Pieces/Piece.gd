@@ -87,7 +87,7 @@ func inputCheck():
 func move(destination,movement):
 	var pmoves = playerNode.moves_taken
 	var pmax = playerNode.MAX_MOVES
-	if mapNode.ValidMove(destination,MAX_MOVES-total_moves==1||playerNode.MAX_MOVES-playerNode.moves_taken == 1,self) \
+	if mapNode.ValidMove(destination,self) \
 	&& total_moves < MAX_MOVES && pmoves < pmax:
 		rpc("update_position",destination,movement,pmoves,pmax)
 
