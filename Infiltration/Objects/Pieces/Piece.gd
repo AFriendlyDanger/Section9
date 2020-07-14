@@ -28,6 +28,7 @@ func _ready():
 	add_child(directionTile)
 	set_process(false)
 	SpriteLayer()
+	find_node("Area2D").connect("input_event", self, "_on_Area2D_input_event")
 
 func _activate(status = true):
 	if is_network_master():
@@ -153,3 +154,10 @@ func Interact():
 func ActionUsed():
 	rset("action_taken", true)
 	_activate(false)
+
+func _on_Area2D_input_event(_viewport, event, _shape_idx):
+	if(event is InputEventMouseButton && event.pressed):
+		print(name)
+		if playerNode.selector.visible && alive && !action_taken:
+			playerNode.selection = self
+			playerNode.SetSelection()

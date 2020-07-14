@@ -8,6 +8,7 @@ var security = []
 var mainframes = []
 var turns = 0
 var player_turn = 0
+var musicNode
 onready var camera = $Camera
 onready var piece_steps = $CanvasLayer/PieceSteps/Label
 onready var step_pool = $CanvasLayer/StepPool/Label
@@ -38,6 +39,8 @@ func _ready():
 	security = get_tree().get_nodes_in_group("Security")
 	players = get_tree().get_nodes_in_group("Player")
 	mainframes = get_tree().get_nodes_in_group("Mainframe")
+	musicNode = get_tree().get_root().find_node("Music",true,false)
+	musicNode.switchTrack(4)
 	
 	if get_tree().is_network_server():
 		# For the server, give control of player 2 to the other peer. 

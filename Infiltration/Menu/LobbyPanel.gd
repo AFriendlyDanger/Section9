@@ -20,8 +20,10 @@ func _player_connected(_id):
 	#infiltration.connect("game_finished", self, "_end_game", [], CONNECT_DEFERRED)
 	
 	get_tree().get_root().add_child(infiltration)
+	
+	get_parent().hide()
 	get_parent().get_parent().hide()
-	hide()
+	#hide()
 
 
 func _player_disconnected(_id):

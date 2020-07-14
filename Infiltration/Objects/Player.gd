@@ -19,6 +19,7 @@ func _ready():
 	selector.visible = turn
 	SetSelection()
 	add_child(selector)
+		
 
 
 func _process(_delta):

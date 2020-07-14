@@ -25,3 +25,5 @@ func _on_Area2D_area_exited(_area):
 	if !is_network_master():
 		visible = false
 	cloaked = true
+
+
