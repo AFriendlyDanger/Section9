@@ -2,6 +2,7 @@ extends "res://Objects/Pieces/Piece.gd"
 
 func _ready():
 	classType = Global.Class.Demoman
+	action_text = "Breach"
 	
 func Attack():
 	mapNode.attackHit([boardpos+facing*3],self)
@@ -24,3 +25,8 @@ remotesync func destroyWall(wallpos):
 			mapNode.RecalcLOS()
 			if is_network_master():
 				ActionUsed()
+
+func set_ui():
+	mapNode.attack_ui.LabelText("Bomb")
+	mapNode.attack_ui.visible = true
+	.set_ui()

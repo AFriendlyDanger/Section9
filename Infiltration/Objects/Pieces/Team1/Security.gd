@@ -6,6 +6,7 @@ var attack_switch = false
 
 func _ready():
 	classType = Global.Class.Security
+	action_text = "Stance"
 	
 func inputCheck() :
 	if !attack_switch || Input.is_action_just_pressed("attack") || Input.is_action_just_pressed("ui_cancel"):
@@ -23,6 +24,7 @@ func Interact():
 		ActionUsed()
 	else:
 		if !attack_switch:
+			mapNode.attack_ui.visible = defending
 			rpc("Reposition")
 	
 
@@ -40,3 +42,8 @@ remotesync func Reposition():
 func NewTurn():
 	attack_switch = false
 	.NewTurn()
+
+func set_ui():
+	mapNode.attack_ui.LabelText("Shoot")
+	mapNode.attack_ui.visible = !defending
+	.set_ui()

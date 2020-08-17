@@ -27,3 +27,9 @@ func _on_Area2D_area_exited(_area):
 	cloaked = true
 
 
+func set_ui():
+	mapNode.attack_ui.LabelText("Attack")
+	mapNode.attack_ui.visible = true
+	.set_ui()
+	mapNode.select_ui.visible = false
+

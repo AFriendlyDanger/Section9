@@ -7,6 +7,7 @@ export var console = false
 export var mainframe = false
 export var door = false
 var open = false
+var turn_hacked = -10
 const UPLOAD_TIME = 3
 var upload_turns = 0
 var uploading = false
@@ -23,8 +24,13 @@ func status(wallcheck = false):
 func MovementTile():
 	return !(wall && !open && intact)
 	
-func OpenDoor():
+func OpenDoor(turn):
 	if door && intact:
+		var valid = turn_hacked<=turn-2
+		if valid:
+			turn_hacked = turn
+		else:
+			return valid
 		if open:
 			open = false
 			if(frame == 13):

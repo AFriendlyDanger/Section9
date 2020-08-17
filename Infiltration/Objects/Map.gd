@@ -9,10 +9,15 @@ var mainframes = []
 var turns = 0
 var player_turn = 0
 var musicNode
+var end_turn = 30
 onready var camera = $Camera
 onready var piece_steps = $CanvasLayer/PieceSteps/Label
 onready var step_pool = $CanvasLayer/StepPool/Label
-
+onready var turn_label = $CanvasLayer/Turn/Label
+onready var select_ui = $CanvasLayer/SelectUiContainer
+onready var back_ui = $CanvasLayer/BackUiContainer
+onready var attack_ui = $CanvasLayer/AttackUiContainer
+onready var gameover_ui = $CanvasLayer/GameOver
 #signal game_finished()
 
 func _ready():
@@ -41,6 +46,7 @@ func _ready():
 	mainframes = get_tree().get_nodes_in_group("Mainframe")
 	musicNode = get_tree().get_root().find_node("Music",true,false)
 	musicNode.switchTrack(4)
+	turn_label.text = "TURN:"+String(turns+1)
 	
 	if get_tree().is_network_server():
 		# For the server, give control of player 2 to the other peer. 
@@ -57,12 +63,13 @@ func _process(delta):
 	if Input.is_action_just_pressed("scroll_right"):
 		camera.translate(Vector2.RIGHT*delta*100)
 	elif Input.is_action_pressed("scroll_right"):
-		camera.translate(Vector2.RIGHT*delta*50)
+		camera.translate(Vector2.RIGHT*delta*100)
 	elif Input.is_action_just_pressed("scroll_left") && camera.position.x > 0:
 		camera.translate(Vector2.LEFT*delta*100)
 	elif Input.is_action_pressed("scroll_left") && camera.position.x > 0:
-		camera.translate(Vector2.LEFT*delta*50)
+		camera.translate(Vector2.LEFT*delta*100)
 	FixCamera()
+	#print(Engine.get_frames_per_second())
 
 #setting camera bounds this way because I was getting input delay when the bounds
 #on the camera node were pushed against
@@ -106,17 +113,17 @@ func SetWalltile(tileLoc,tiledata):
 			bordertile += 1
 		bordertile += (Global.BOARDWIDTH - 3)
 	tiles[tileLoc].setTile(tiledata)
-	
+
+
 func ValidMove(tileLoc,moving_piece):
-	
 	var occupied_space = false
 	for piece in pieces:
-		if piece.alive && piece.boardpos == tileLoc:
+		if piece.alive && piece.boardpos == tileLoc && piece.visible:
 			occupied_space = true
 	var validMove = tiles[tileLoc].MovementTile()
 	if validMove:
 		var opening_dist = NearestOpening(tileLoc,moving_piece)
-		print("Nearest Open Space: ", opening_dist)
+		#print("Nearest Open Space: ", opening_dist)
 		if moving_piece.MAX_MOVES-moving_piece.total_moves <= opening_dist || \
 		moving_piece.playerNode.MAX_MOVES-moving_piece.playerNode.moves_taken <= opening_dist:
 			validMove = false
@@ -126,6 +133,7 @@ func ValidMove(tileLoc,moving_piece):
 		moving_piece.must_move = false
 	return validMove
 
+
 func NearestOpening(tileLoc,mover,alreadyChecked=[],distance=0,shortest=100):
 	var continueSearch = false
 	if distance > shortest:
@@ -134,7 +142,10 @@ func NearestOpening(tileLoc,mover,alreadyChecked=[],distance=0,shortest=100):
 		if piece.alive && piece.boardpos == tileLoc && piece != mover &&\
 		 !(piece.classType == Global.Class.Ghost && !piece.visible):
 			continueSearch = true
-			if piece.classType == Global.Class.Security && piece.defending && piece.parentNode != mover.parentNode:
+			if piece.classType == Global.Class.Security && piece.defending && piece.playerNode != mover.playerNode:
+				continueSearch = false
+				distance += 100
+			elif mover.classType == Global.Class.Ghost && piece.playerNode != mover.playerNode: 
 				continueSearch = false
 				distance += 100
 			break 
@@ -204,13 +215,19 @@ func TurnChange():
 	if player_turn > players.size()-1:
 		player_turn = 0
 		turns += 1
+		turn_label.text = "TURN:"+String(turns+1)
 		for mainframe in mainframes:
 			if mainframe.uploading && mainframe.UploadOver():
 				GameEnd(1)
 				return
+		if turns == 29:
+			GameEnd(0)
+			return
 	RecalcLOS()
 	players[player_turn].StartTurn()
 
+func get_real_turn():
+	return turns*2+player_turn
 
 func HitBlocked(tile, facing):
 	for sec in security:
@@ -311,9 +328,12 @@ func SetStepPool(pool,steps):
 
 func GameEnd(team = 0):
 	if team == 1:
-		print("Infultrators Win")
+		gameover_ui.WinText("Infiltrators Win")
+		print("Infiltrators Win")
 	else:
-		print("Defense Wins")
+		gameover_ui.WinText("Defenders Win")
+		print("Defenders Win")
+	gameover_ui.show()
 	for player in players:
 		player.set_process(false)
 	for piece in pieces:

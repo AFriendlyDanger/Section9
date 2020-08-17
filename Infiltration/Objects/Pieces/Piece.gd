@@ -15,6 +15,7 @@ var directionTile
 var moving = false
 var must_move = false
 var classType = Global.Class.Demoman
+var action_text = "ACTION"
 onready var mapNode = $"../../"
 onready var playerNode = $"../"
 
@@ -31,8 +32,16 @@ func _ready():
 	find_node("Area2D").connect("input_event", self, "_on_Area2D_input_event")
 
 func _activate(status = true):
+	playerNode.piece_selected = status
 	if is_network_master():
 		playerNode.selector.visible = !status
+		if status:
+			set_ui()
+		else:
+			mapNode.select_ui.visible = true
+			mapNode.select_ui.LabelText("SELECT")
+			mapNode.attack_ui.visible = false
+			mapNode.back_ui.LabelText("MENU")
 	active = status
 	playerNode.set_process(!status)
 	set_process(status)
@@ -40,7 +49,14 @@ func _activate(status = true):
 		if action_taken:
 			playerNode.FindNewSelection()
 		playerNode.SetSelection()
-	
+		if playerNode.time_up:
+			playerNode.EndTurn()
+		
+func set_ui():
+	mapNode.select_ui.LabelText(action_text)
+	mapNode.back_ui.LabelText("BACK")
+			
+			
 func _process(_delta):
 	if is_network_master():
 		if(!moving):
@@ -55,6 +71,8 @@ func inputCheck():
 			Interact()
 	elif Input.is_action_just_pressed("ui_cancel"):
 		if !must_move:
+			if total_moves > 0:
+				action_taken = true
 			_activate(false)
 	elif Input.is_action_just_pressed("ui_right"):
 		if not facing == Global.RIGHT:
@@ -150,6 +168,13 @@ func NewTurn():
 func Interact():
 	#Virtual function
 	pass
+
+func ForceEnd():
+	#Virtual function
+	if must_move:
+		Killed()
+	else:
+		_activate(false)
 
 func ActionUsed():
 	rset("action_taken", true)

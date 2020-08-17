@@ -5,8 +5,12 @@ export var player = 0
 
 const pathTiles = preload("res://Objects/path.tscn")
 var selector
+var piece_selected = false
+var time_up = false
 var turn = false
+onready var menuNode = $"../CanvasLayer/Menu/"
 onready var mapNode = $"../"
+onready var turnTime = $"../CanvasLayer/Time/"
 onready var selection = get_child(1)
 var pieces = []
 
@@ -19,7 +23,6 @@ func _ready():
 	selector.visible = turn
 	SetSelection()
 	add_child(selector)
-		
 
 
 func _process(_delta):
@@ -31,7 +34,8 @@ func PieceSelect():
 	if Input.is_action_just_pressed("ui_accept"):
 		selection._activate()
 	elif Input.is_action_just_pressed("ui_start"):
-		rpc("EndTurn")
+		Menu()
+		#rpc("EndTurn")
 	elif Input.is_action_just_pressed("ui_right"):
 		selection = mapNode.NextSelect(selection,Global.RIGHT)
 		SetSelection()
@@ -50,15 +54,27 @@ func SetSelection():
 
 func FindNewSelection():
 	if !pieces.empty():
-		selection = pieces[0]
-		SetSelection()
-		mapNode.camera.position = Vector2(selector.position.x-Global.BOARDWIDTH*4,0)
-		mapNode.FixCamera()
+		var selection_found = false
+		for piece in pieces:
+			if !piece.action_taken:
+					selection = piece
+					selection_found = true
+					break
+		if selection_found:
+			SetSelection()
+			mapNode.camera.position = Vector2(selector.position.x-Global.BOARDWIDTH*4,0)
+			mapNode.FixCamera()
+		else:
+			rpc("EndTurn")
 	else:
 		mapNode.GameEnd(player)
 
 remotesync func StartTurn():
 	turn = true
+	time_up = false
+	mapNode.select_ui.LabelText("SELECT")
+	mapNode.attack_ui.visible = false
+	mapNode.back_ui.LabelText("MENU")
 	if !selection.alive:
 		FindNewSelection()
 	if is_network_master():
@@ -70,8 +86,20 @@ remotesync func StartTurn():
 		piece.NewTurn()
 	moves_taken = 0
 	mapNode.SetStepPool(MAX_MOVES,selection.MAX_MOVES)
+	turnTime.SetTimer(self)
 	set_process(true)
 
+func Menu():
+	set_process(false)
+	menuNode.show_menu(self)
+
+func TimeUp():
+	time_up = true
+	if turn:
+		if piece_selected:
+			selection.ForceEnd()
+		else:
+			EndTurn()
 
 remotesync func EndTurn():
 	turn = false

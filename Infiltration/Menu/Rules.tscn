@@ -1,0 +1,284 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Fonts/Quinque10.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Themes/UI_panels_Rules.tres" type="Theme" id=2]
+[ext_resource path="res://Sprites/tokens.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/xbutton.png" type="Texture" id=4]
+[ext_resource path="res://Menu/Rules.gd" type="Script" id=5]
+
+[node name="Rules" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+margin_top = 15.0
+margin_right = 256.0
+margin_bottom = 224.0
+theme = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+margin_left = 1.0
+margin_top = 1.0
+margin_right = 255.0
+margin_bottom = 208.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+margin_right = 254.0
+margin_bottom = 13.0
+alignment = 1
+
+[node name="Control2" type="Control" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+margin_left = 51.0
+margin_right = 51.0
+margin_bottom = 13.0
+
+[node name="Label2" type="Label" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+margin_left = 55.0
+margin_right = 199.0
+margin_bottom = 13.0
+custom_fonts/font = ExtResource( 1 )
+text = "Instructions"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Control" type="Control" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+margin_left = 203.0
+margin_right = 203.0
+margin_bottom = 13.0
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/Control"]
+margin_left = 35.6532
+margin_top = -1.0
+margin_right = 51.6532
+margin_bottom = 15.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+icon = ExtResource( 4 )
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Control" type="Control" parent="PanelContainer/VBoxContainer"]
+margin_top = 17.0
+margin_right = 254.0
+margin_bottom = 207.0
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="PanelContainer/VBoxContainer/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 2.03198
+size_flags_horizontal = 0
+size_flags_vertical = 0
+scroll_horizontal_enabled = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Options" type="VBoxContainer" parent="PanelContainer/VBoxContainer/Control/ScrollContainer"]
+margin_right = 256.032
+margin_bottom = 190.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Controls" type="Button" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options"]
+margin_right = 108.0
+margin_bottom = 13.0
+size_flags_horizontal = 0
+custom_fonts/font = ExtResource( 1 )
+custom_colors/font_color = Color( 0.329412, 0.490196, 0.329412, 1 )
+text = ">Controls"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ControlsCont" type="VBoxContainer" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options"]
+visible = false
+margin_top = 17.0
+margin_right = 234.0
+margin_bottom = 64.0
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ControlsCont"]
+margin_right = 234.0
+margin_bottom = 47.0
+text = "Move = wasd/Arrow keys
+Select/action = Spacebar/enter
+back/menu = esc/backspace
+Attack = Shift
+Scroll Camera Left/Right = Brackets [/]"
+autowrap = true
+
+[node name="Rules" type="Button" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options"]
+margin_top = 17.0
+margin_right = 72.0
+margin_bottom = 30.0
+size_flags_horizontal = 0
+custom_fonts/font = ExtResource( 1 )
+custom_colors/font_color = Color( 0.329412, 0.490196, 0.329412, 1 )
+text = ">Rules"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RuleCont" type="VBoxContainer" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options"]
+visible = false
+margin_top = 34.0
+margin_right = 108.0
+margin_bottom = 412.0
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/RuleCont"]
+margin_right = 108.0
+margin_bottom = 167.0
+text = "There are two teams: Defenders and Infiltrators. The goal of the Infiltrators is to upload a virus onto the a Mainfraim Terminal before time 30 rounds have passed. The Defenders job is to stop them.
+Either Team wins if all the opponents are killed."
+autowrap = true
+
+[node name="Label2" type="Label" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/RuleCont"]
+margin_top = 171.0
+margin_right = 108.0
+margin_bottom = 378.0
+text = "Players take turns moving their Squad. Each Turn a Player can move a total of 30 spaces with their Squad and each character can move a maximum of 10 spaces.
+Each character can take a single action on thier turn. Once an action is taken a character can no longer move that turn."
+autowrap = true
+
+[node name="Classes" type="Button" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options"]
+margin_top = 34.0
+margin_right = 96.0
+margin_bottom = 47.0
+size_flags_horizontal = 0
+custom_fonts/font = ExtResource( 1 )
+custom_colors/font_color = Color( 0.329412, 0.490196, 0.329412, 1 )
+text = ">Classes"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ClassCont" type="VBoxContainer" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options"]
+visible = false
+margin_top = 51.0
+margin_right = 244.0
+margin_bottom = 552.0
+
+[node name="ClassDesc" type="Label" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont"]
+margin_right = 244.0
+margin_bottom = 27.0
+text = "There are 4 classes of characters that each have unique actions they can take on their turns."
+autowrap = true
+
+[node name="HackerSprite" type="Control" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont"]
+margin_top = 31.0
+margin_right = 16.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 16, 16 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="Sprite" type="Sprite" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont/HackerSprite"]
+texture = ExtResource( 3 )
+centered = false
+region_enabled = true
+region_rect = Rect2( 16, 16, 16, 16 )
+
+[node name="Hacker" type="Label" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont"]
+margin_top = 51.0
+margin_right = 244.0
+margin_bottom = 138.0
+text = "Hacker: Hackers must stand next to a terminal in ordrer to take their actions. When a hacker hacks an object it cannot be hacked for another round.
+ - Actions:
+DEactivate/activate - Can turn on/off cameras and open/close doors. Hover over the object you want to deactivate/activate with the selector."
+autowrap = true
+
+[node name="GhostSprite" type="Control" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont"]
+margin_top = 142.0
+margin_right = 16.0
+margin_bottom = 158.0
+rect_min_size = Vector2( 16, 16 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="Sprite" type="Sprite" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont/GhostSprite"]
+texture = ExtResource( 3 )
+centered = false
+region_enabled = true
+region_rect = Rect2( 48, 16, 16, 16 )
+
+[node name="Ghost" type="Label" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont"]
+margin_top = 162.0
+margin_right = 244.0
+margin_bottom = 239.0
+text = "Ghost: Only visible on camera. Cannot walk past enemy characters but can be walked past. If an enemy stops on a space they occupy they will be assassinated.
+ - Actions:
+Assassinate - Can kill a character if they are not standing in front of them"
+autowrap = true
+
+[node name="SecuritySprite" type="Control" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont"]
+margin_top = 243.0
+margin_right = 32.0
+margin_bottom = 259.0
+rect_min_size = Vector2( 32, 16 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="Sprite" type="Sprite" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont/SecuritySprite"]
+texture = ExtResource( 3 )
+centered = false
+region_enabled = true
+region_rect = Rect2( 32, 16, 16, 16 )
+
+[node name="Sprite2" type="Sprite" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont/SecuritySprite"]
+position = Vector2( 16, 0 )
+texture = ExtResource( 3 )
+centered = false
+region_enabled = true
+region_rect = Rect2( 64, 16, 16, 16 )
+
+[node name="Security" type="Label" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont"]
+margin_top = 263.0
+margin_right = 244.0
+margin_bottom = 400.0
+text = "Security: When in defense position they will be protected from attacks from the side and front and black enemies from moving passed. In attack position they will shoot any visible enemy that passes in front of them no matter the turn.
+ - Actions:
+Switch Position - Will switch from attack to defense or vise versa. If switching from defense to attack you will have the option to shoot afterwards.
+Shoot - Will shoot in a straight line killing any enemy in its path."
+autowrap = true
+
+[node name="DemomanSprite" type="Control" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont"]
+margin_top = 404.0
+margin_right = 16.0
+margin_bottom = 420.0
+rect_min_size = Vector2( 16, 16 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="Sprite" type="Sprite" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont/DemomanSprite"]
+texture = ExtResource( 3 )
+centered = false
+region_enabled = true
+region_rect = Rect2( 0, 16, 16, 16 )
+
+[node name="Demoman" type="Label" parent="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/ClassCont"]
+margin_top = 424.0
+margin_right = 244.0
+margin_bottom = 501.0
+text = "Demoman 
+ - Actions:
+Breach Wall - Destroy an adjacent wall tile.
+Throw Grenade - A grenade lands 3 tiles in front of them and will kill any character in that tile including a defending Security Guard"
+autowrap = true
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/Control/Button" to="." method="_on_X_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/Controls" to="." method="_on_Controls_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/Rules" to="." method="_on_Rules_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Control/ScrollContainer/Options/Classes" to="." method="_on_Classes_pressed"]

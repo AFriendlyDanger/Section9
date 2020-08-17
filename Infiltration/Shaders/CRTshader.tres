@@ -1,0 +1,61 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=2]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+uniform float bendX = 3;
+uniform float bendY = 3;
+
+uniform bool applyCA = true;
+uniform bool applyCRT = true;
+uniform float amount = 1.0;
+uniform sampler2D offset_texture : hint_white;
+
+vec4 chromab(vec4 color,sampler2D textr, vec2 uv){
+	float adjusted_amount = amount * texture(offset_texture, uv).r / 100.0;
+	color.r = textureLod(textr, vec2(uv.x + adjusted_amount, uv.y),0.0).r;
+	color.g = textureLod(textr, uv,0.0).g;
+	color.b = textureLod(textr, vec2(uv.x - adjusted_amount, uv.y),0.0).b;
+	return color;
+}
+
+vec2 crt(vec2 coord){
+	coord = (coord - 0.5) * 2.0;
+	coord *=1.1;
+	coord.x *= (1.0 + pow((abs(coord.y)/ bendX), 3.0));
+	coord.y *= (1.0 + pow((abs(coord.x)/ bendY), 3.0));
+	coord = (coord/2.0)+0.5;
+	return coord;
+}
+
+void fragment(){
+	vec4 color = texture(TEXTURE, UV);
+	
+	vec2 coord = FRAGCOORD.xy / (1.0/SCREEN_PIXEL_SIZE.xy);
+	//coord.y = 1.0 - coord.y;
+	
+	//coord *= vec2(1.0+(coord.y*coord.y)*bendX, 1.0+(coord.x*coord.x)*bendY);
+
+	if(applyCRT){
+			coord = crt(coord);
+	}
+	
+	if(applyCA){
+		color = chromab(color,TEXTURE, coord);
+	}
+	if (coord.x < 0.0 || coord.x > 1.0 || coord.y < 0.0 || coord.y > 1.0)
+		color.rgb = vec3(0.0,0.0,0.0);
+	//color = texture(TEXTURE,coord);
+	COLOR = color;
+	//COLOR = color;
+	//COLOR.x *= 1.0 + pow((abs(COLOR.y)/ bendX), 3.0);
+	//COLOR.y *= 1.0 + pow((abs(COLOR.x)/ bendY), 3.0);
+}"
+
+[resource]
+shader = SubResource( 1 )
+shader_param/bendX = 3.0
+shader_param/bendY = 3.0
+shader_param/applyCA = true
+shader_param/applyCRT = true
+shader_param/amount = 0.282

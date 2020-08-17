@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=2]
+[gd_scene load_steps=48 format=2]
 
 [ext_resource path="res://Objects/Tiles/WallTile.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Objects/Tiles/FloorTile.tscn" type="PackedScene" id=2]
@@ -21,6 +21,13 @@
 [ext_resource path="res://Objects/GameUI/SelectUiContainer.tscn" type="PackedScene" id=19]
 [ext_resource path="res://Objects/GameUI/AttackUiContainer.tscn" type="PackedScene" id=20]
 [ext_resource path="res://Objects/GameUI/BackUiContainer.tscn" type="PackedScene" id=21]
+[ext_resource path="res://Objects/GameUI/PauseMenu.tscn" type="PackedScene" id=22]
+[ext_resource path="res://Menu/VolumeControl.tscn" type="PackedScene" id=23]
+[ext_resource path="res://Themes/UI_panels_big.tres" type="Theme" id=24]
+[ext_resource path="res://Fonts/Quinque10.tres" type="DynamicFont" id=25]
+[ext_resource path="res://Objects/GameOverUI.gd" type="Script" id=26]
+[ext_resource path="res://Objects/TurnTime.gd" type="Script" id=27]
+[ext_resource path="res://Menu/Rules.tscn" type="PackedScene" id=28]
 
 [sub_resource type="VisualShaderNodeVec3Uniform" id=1]
 uniform_name = "VectorUniform"
@@ -2285,6 +2292,29 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Turn" type="Panel" parent="CanvasLayer"]
+margin_top = 4.0
+margin_right = 43.0
+margin_bottom = 11.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme = ExtResource( 14 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="CanvasLayer/Turn"]
+margin_left = 1.0
+margin_right = 40.0
+margin_bottom = 14.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 13 )
+text = "TURN:00"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="StepPool" type="Panel" parent="CanvasLayer"]
 margin_left = 213.0
 margin_top = 4.0
@@ -2309,8 +2339,109 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Time" type="Panel" parent="CanvasLayer"]
+margin_left = 64.0
+margin_top = 4.0
+margin_right = 104.0
+margin_bottom = 11.0
+theme = ExtResource( 14 )
+script = ExtResource( 27 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TimerText" type="Label" parent="CanvasLayer/Time"]
+margin_right = 40.0
+margin_bottom = 7.0
+text = "0:00"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Timer" type="Timer" parent="CanvasLayer/Time"]
+one_shot = true
+
 [node name="SelectUiContainer" parent="CanvasLayer" instance=ExtResource( 19 )]
 
 [node name="AttackUiContainer" parent="CanvasLayer" instance=ExtResource( 20 )]
+visible = false
 
 [node name="BackUiContainer" parent="CanvasLayer" instance=ExtResource( 21 )]
+
+[node name="Menu" parent="CanvasLayer" instance=ExtResource( 22 )]
+visible = false
+
+[node name="VolumeControl" parent="CanvasLayer" instance=ExtResource( 23 )]
+visible = false
+
+[node name="Rules" parent="CanvasLayer" instance=ExtResource( 28 )]
+visible = false
+
+[node name="GameOver" type="Panel" parent="CanvasLayer"]
+visible = false
+anchor_left = 0.0625
+anchor_top = 0.2
+anchor_right = 0.934
+anchor_bottom = 0.6665
+margin_right = 0.895996
+margin_bottom = 0.0399933
+theme = ExtResource( 24 )
+script = ExtResource( 26 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GameOver"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_vertical = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Control" type="Control" parent="CanvasLayer/GameOver/VBoxContainer"]
+margin_right = 224.0
+
+[node name="GameOverTxt" type="Label" parent="CanvasLayer/GameOver/VBoxContainer"]
+margin_top = 4.0
+margin_right = 224.0
+margin_bottom = 17.0
+custom_fonts/font = ExtResource( 25 )
+custom_colors/font_color = Color( 0.780392, 0.847059, 0.815686, 1 )
+text = "Game Over"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Winner" type="Label" parent="CanvasLayer/GameOver/VBoxContainer"]
+margin_top = 21.0
+margin_right = 224.0
+margin_bottom = 34.0
+custom_fonts/font = ExtResource( 25 )
+custom_colors/font_color = Color( 0.780392, 0.847059, 0.815686, 1 )
+text = "Infiltrators Win"
+align = 1
+
+[node name="Control2" type="Control" parent="CanvasLayer/GameOver/VBoxContainer"]
+margin_top = 38.0
+margin_right = 224.0
+margin_bottom = 46.0
+rect_min_size = Vector2( 0, 8 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GameOver/VBoxContainer"]
+margin_top = 50.0
+margin_right = 224.0
+margin_bottom = 63.0
+alignment = 1
+
+[node name="EXIT" type="Button" parent="CanvasLayer/GameOver/VBoxContainer/HBoxContainer"]
+margin_left = 88.0
+margin_right = 136.0
+margin_bottom = 13.0
+custom_fonts/font = ExtResource( 25 )
+custom_colors/font_color = Color( 0.780392, 0.847059, 0.815686, 1 )
+text = "EXIT"
+[connection signal="timeout" from="CanvasLayer/Time/Timer" to="CanvasLayer/Time" method="_on_Timer_timeout"]
+[connection signal="pressed" from="CanvasLayer/GameOver/VBoxContainer/HBoxContainer/EXIT" to="CanvasLayer/GameOver" method="_on_EXIT_pressed"]
